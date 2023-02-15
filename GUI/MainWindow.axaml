@@ -5,5 +5,18 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CrossTTD.MainWindow"
         Title="GUI">
-    Welcome to Avalonia!
+    <Grid Row="2" Column="3">
+        <DockPanel
+            HorizontalAlignment="Left" 
+            VerticalAlignment="Top" 
+            Background="Gray">
+            <Button Click="ButtonFilesOnClick">File</Button>
+            <Button Click="ButtonToolsOnClick">Tools</Button>
+            <Button Click="ButtonSettingsOnClick">Settings</Button>
+            <Button Click="ButtonProfilesOnClick">Profiles</Button>
+        </DockPanel>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button Click="ButtonSquareOnClick">Square</Button>
+        </StackPanel>
+    </Grid>
 </Window>
