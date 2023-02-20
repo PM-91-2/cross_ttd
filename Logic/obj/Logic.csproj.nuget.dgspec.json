@@ -1,26 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "/Users/elisey/cross_ttd/Logic/Logic.csproj": {}
+    "E:\\Rider\\PM91-proj\\Logic\\Logic.csproj": {}
   },
   "projects": {
-    "/Users/elisey/cross_ttd/Logic/Logic.csproj": {
+    "E:\\Rider\\PM91-proj\\Logic\\Logic.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/elisey/cross_ttd/Logic/Logic.csproj",
+        "projectUniqueName": "E:\\Rider\\PM91-proj\\Logic\\Logic.csproj",
         "projectName": "Logic",
-        "projectPath": "/Users/elisey/cross_ttd/Logic/Logic.csproj",
-        "packagesPath": "/Users/elisey/.nuget/packages/",
-        "outputPath": "/Users/elisey/cross_ttd/Logic/obj/",
+        "projectPath": "E:\\Rider\\PM91-proj\\Logic\\Logic.csproj",
+        "packagesPath": "C:\\Users\\mamonov\\.nuget\\packages\\",
+        "outputPath": "E:\\Rider\\PM91-proj\\Logic\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/elisey/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\mamonov\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -54,7 +53,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.102/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Users\\mamonov\\.dotnet\\sdk\\7.0.200\\RuntimeIdentifierGraph.json"
         }
       }
     }
