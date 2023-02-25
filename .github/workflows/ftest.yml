@@ -1,25 +1,26 @@
 name: Config_checker
 
 on:
-  pull_request:
-    branches:
-      - dev
   push:
-    branches:
-      - dev
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
 
 jobs:
-check-format:
-  runs-on: windows-latest
+  build:
+    runs-on: windows-latest
 
       steps:
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v2
-          with:
-          dotnet-version: '7.0.x'
-       
-      - name: Check out code
-        uses: actions/checkout@v3
-       
-      - name: Run dotnet format
-        run: dotnet format
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Check out code
+      uses: actions/checkout@v2
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
