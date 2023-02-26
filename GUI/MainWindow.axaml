@@ -5,18 +5,21 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CrossTTD.MainWindow"
         Title="GUI">
-    <Grid Row="2" Column="3">
-        <DockPanel
-            HorizontalAlignment="Left" 
-            VerticalAlignment="Top" 
-            Background="Gray">
-            <Button Click="ButtonFilesOnClick">File</Button>
+    <Grid ShowGridLines="True" Margin="3" RowDefinitions="30,*" ColumnDefinitions="*, *, *" ZIndex="0">
+        <DockPanel ZIndex="0"
+                   HorizontalAlignment="Left" 
+                   VerticalAlignment="Top" 
+                   Background="Gray">
+            <Button Click="ButtonFilesOnClick">Files</Button>
             <Button Click="ButtonToolsOnClick">Tools</Button>
             <Button Click="ButtonSettingsOnClick">Settings</Button>
             <Button Click="ButtonProfilesOnClick">Profiles</Button>
         </DockPanel>
-        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+        <TextBlock Grid.Row="0" Grid.Column="1" Background="" Text="TTD" HorizontalAlignment="Center" VerticalAlignment="Top"></TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
             <Button Click="ButtonSquareOnClick">Square</Button>
         </StackPanel>
+        <Canvas Grid.Row="1" Grid.Column="1"  ZIndex="-1">
+        </Canvas>
     </Grid>
 </Window>
