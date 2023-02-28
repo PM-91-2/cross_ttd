@@ -8,24 +8,26 @@
     "net7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\mamonov\\.nuget\\packages\\": {}
+    "C:\\Users\\Максим\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Rider\\PM91-proj\\Logic\\Logic.csproj",
+      "projectUniqueName": "C:\\Users\\Максим\\Documents\\GitHub\\cross_ttd\\Logic\\Logic.csproj",
       "projectName": "Logic",
-      "projectPath": "E:\\Rider\\PM91-proj\\Logic\\Logic.csproj",
-      "packagesPath": "C:\\Users\\mamonov\\.nuget\\packages\\",
-      "outputPath": "E:\\Rider\\PM91-proj\\Logic\\obj\\",
+      "projectPath": "C:\\Users\\Максим\\Documents\\GitHub\\cross_ttd\\Logic\\Logic.csproj",
+      "packagesPath": "C:\\Users\\Максим\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Максим\\Documents\\GitHub\\cross_ttd\\Logic\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\mamonov\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Максим\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -59,7 +61,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Users\\mamonov\\.dotnet\\sdk\\7.0.200\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -22,4 +22,22 @@
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
         <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="icons\line.jpg" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="icons\line.png" />
+      <AvaloniaResource Include="icons\line.png" />
+      <None Remove="icons\curved.png" />
+      <None Remove="icons\square.png" />
+      <AvaloniaResource Include="icons\square.png" />
+      <None Remove="icons\circle.png" />
+      <AvaloniaResource Include="icons\circle.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaResource Include="icons\curved.png" />
+    </ItemGroup>
 </Project>
