@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace Geometry
 {
-    internal class Geometry
-    {
         // Общий интерфейс
         public interface IFigure  // : ICloneable
         {
@@ -80,5 +78,5 @@ namespace Geometry
             void drawcircle();
             void drawarc();
         }
-    }
+    
 }
