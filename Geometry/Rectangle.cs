@@ -1,17 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Geometry
 {
         // Общий интерфейс
         public interface IFigure  // : ICloneable
         {
-            IEnumerable<Vector2> Points(double eps);  // Контур фигуры, eps - мин. расстояние между точками
-            //bool IsContain(Vector2 p, double eps);  // Принадлежность точки фигуре
+            List<Vector2> Points(double eps);  // Контур фигуры, eps - мин. расстояние между точками
+            //bool IsPointInFigure(Vector2 p, double eps);  // Принадлежность точки фигуре
             //void Translate(Vector2 to);  // Перемещение
             //void Scale(double scale);  // Масштаб
             //void Rotate(double angle);  // Вращение
@@ -35,10 +32,13 @@ namespace Geometry
                 points = points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
                 position = _position;
             }
-            public bool isContain(Vector2 point, double eps)
-            {
-                // Дима
-                return true;
+            public bool IsPointInFigure(Vector2 point, double eps) {
+	            var point1 = GeometryUtils.RectangleSideProduct(point, points[0], points[1]);
+	            var point2 = GeometryUtils.RectangleSideProduct(point, points[1], points[3]);
+	            var point3 = GeometryUtils.RectangleSideProduct(point, points[3], points[2]);
+	            var point4 = GeometryUtils.RectangleSideProduct(point, points[2], points[0]);
+
+	            return point1 > 0 && point2 > 0 && point3 > 0 && point4 > 0;
             }
             public void Move(Vector2 startPosition, Vector2 newPosition)
             {
@@ -78,5 +78,4 @@ namespace Geometry
             void drawcircle();
             void drawarc();
         }
-    
 }
