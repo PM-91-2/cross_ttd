@@ -78,5 +78,4 @@ namespace Geometry
             void drawcircle();
             void drawarc();
         }
-
 }
