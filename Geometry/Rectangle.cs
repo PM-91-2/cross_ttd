@@ -33,10 +33,10 @@ namespace Geometry
                 position = _position;
             }
             public bool IsPointInFigure(Vector2 point, double eps) {
-	            var point1 = GeometryUtils.RectangleProduct(point, points[0], points[1]);
-	            var point2 = GeometryUtils.RectangleProduct(point, points[1], points[3]);
-	            var point3 = GeometryUtils.RectangleProduct(point, points[3], points[2]);
-	            var point4 = GeometryUtils.RectangleProduct(point, points[2], points[0]);
+	            var point1 = GeometryUtils.RectangleSideProduct(point, points[0], points[1]);
+	            var point2 = GeometryUtils.RectangleSideProduct(point, points[1], points[3]);
+	            var point3 = GeometryUtils.RectangleSideProduct(point, points[3], points[2]);
+	            var point4 = GeometryUtils.RectangleSideProduct(point, points[2], points[0]);
 
 	            return point1 > 0 && point2 > 0 && point3 > 0 && point4 > 0;
             }
