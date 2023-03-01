@@ -57,11 +57,15 @@ namespace Geometry
                 rotate_points[i] = new Vector2((M[0].X * locale_points[i].X + M[0].Y * locale_points[i].Y + position.X),
                                                (M[1].X * locale_points[i].X + M[1].Y * locale_points[i].Y) + position.Y);
         }
-        public void Scale()
-            {
+        public void Scale(float scaleX, float scaleY)
+        {
+            Vector2 center = Vector2.Multiply(0.5f, points[3] - points[0]);
+            for (int i = 0; i < 4; i++) points[i] -= center;
+            for (int i = 0; i < 4; i++) points[i] = new Vector2(points[i].X * scaleX, points[i].Y * scaleY);
+            for (int i = 0; i < 4; i++) points[i] += center;
 
-            }
         }
+    }
 
         //IFigure Intersect(IFigure figure1);  // Пересечение
         //IFigure Union(IFigure figure1);  // Объединение
