@@ -44,11 +44,20 @@ namespace Geometry
             {
                 // Маша
             }
-            public void Rotate(double angle)
-            {
-                // Саша
-            }
-            public void Scale()
+        public void Rotate(double angle)
+        {
+            double angle_convert = Math.PI * angle / 180;
+            locale_points = rotate_points = points;
+            List<Vector2> M = new List<Vector2>{ new Vector2((float)Math.Cos(angle_convert), -(float)Math.Sin(angle_convert)),
+                                                 new Vector2((float)Math.Sin(angle_convert), (float)Math.Cos(angle_convert)) };
+
+            for (int i = 0; i < points.Count; i++) locale_points[i] -= position;
+
+            for (int i = 0; i < points.Count; i++)
+                rotate_points[i] = new Vector2((M[0].X * locale_points[i].X + M[0].Y * locale_points[i].Y + position.X),
+                                               (M[1].X * locale_points[i].X + M[1].Y * locale_points[i].Y) + position.Y);
+        }
+        public void Scale()
             {
 
             }
