@@ -30,8 +30,22 @@ public partial class MainWindow : Window
         throw new System.NotImplementedException();
     }
 
-    private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
+    private void ButtonLineOnClick(object? sender, RoutedEventArgs e)
     {
         throw new System.NotImplementedException();
+    }
+
+    private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
+    {
+	    throw new System.NotImplementedException();
+    }
+
+    private void ButtonCircleOnClick(object? sender, RoutedEventArgs e)
+    {
+	    throw new System.NotImplementedException();
+    }
+    private void ButtonCurvedOnClick(object? sender, RoutedEventArgs e)
+    {
+	    throw new System.NotImplementedException();
     }
 }

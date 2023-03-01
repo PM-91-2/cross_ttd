@@ -7,8 +7,8 @@
         Title="GUI">
     <Grid ShowGridLines="True" Margin="3" RowDefinitions="30,*" ColumnDefinitions="*, *, *" ZIndex="0">
         <DockPanel ZIndex="0"
-                   HorizontalAlignment="Left" 
-                   VerticalAlignment="Top" 
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
                    Background="Gray">
             <Button Click="ButtonFilesOnClick">Files</Button>
             <Button Click="ButtonToolsOnClick">Tools</Button>
@@ -16,9 +16,28 @@
             <Button Click="ButtonProfilesOnClick">Profiles</Button>
         </DockPanel>
         <TextBlock Grid.Row="0" Grid.Column="1" Background="" Text="TTD" HorizontalAlignment="Center" VerticalAlignment="Top"></TextBlock>
-        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
-            <Button Click="ButtonSquareOnClick">Square</Button>
-        </StackPanel>
+        <WrapPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" ZIndex="1" Orientation="Vertical" ItemWidth="35" VerticalAlignment="Center">
+            <Button Click="ButtonLineOnClick">
+	            <StackPanel>
+		            <Image Source="icons/line.png"></Image>
+	            </StackPanel>
+            </Button>
+	        <Button Click="ButtonSquareOnClick">
+		        <StackPanel>
+			        <Image Source="icons/square.png"></Image>
+		        </StackPanel>
+	        </Button>
+	        <Button Click="ButtonCircleOnClick">
+		        <StackPanel>
+			        <Image Source="icons/circle.png"></Image>
+		        </StackPanel>
+	        </Button>
+	        <Button Click="ButtonCurvedOnClick">
+		        <StackPanel>
+			        <Image Source="icons/curved.png"></Image>
+		        </StackPanel>
+	        </Button>
+        </WrapPanel>
         <Canvas Grid.Row="1" Grid.Column="1"  ZIndex="-1">
         </Canvas>
     </Grid>
