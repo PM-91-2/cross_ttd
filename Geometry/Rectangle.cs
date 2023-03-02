@@ -42,7 +42,12 @@ namespace Geometry
             }
             public void Move(Vector2 startPosition, Vector2 newPosition)
             {
-                // Маша
+                moved_points=points;
+                var moveVector = new Vector2{(newPosition.X - startPosition.X),
+                                             (newPosition.Y - startPosition.Y)};
+                for (int i=0; i<points.Count; i++)
+                moved_points[i] = new Vector2{ (points.X + moveVector.X), (points.Y + moveVector.Y)};
+
             }
         public void Rotate(double angle)
         {
