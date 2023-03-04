@@ -49,12 +49,11 @@ public partial class MainWindow : Window
 	    rectangle.Width = 50;
 	    rectangle.Height = 25;
 
-	    thisCanv.Children.Add(rectangle);
+	    ThisCanv.Children.Add(rectangle);
     }
 
     private void ButtonCircleOnClick(object? sender, RoutedEventArgs e)
     {
-	    //StackPanel myStackPanel = new StackPanel();
 	    Ellipse ellipse = new Ellipse();
 	    SolidColorBrush mySolidColorBrush = new SolidColorBrush();
 	    mySolidColorBrush.Color = Color.FromArgb(255, 255, 255, 0);
@@ -65,9 +64,7 @@ public partial class MainWindow : Window
 	    ellipse.Width = 100;
 	    ellipse.Height = 50;
 
-	    thisCanv.Children.Add(ellipse);
-	    //this.Content = myStackPanel;
-	    //throw new System.NotImplementedException();
+	    ThisCanv.Children.Add(ellipse);
     }
     private void ButtonCurvedOnClick(object? sender, RoutedEventArgs e)
     {

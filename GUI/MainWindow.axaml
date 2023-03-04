@@ -38,7 +38,7 @@
 		        </StackPanel>
 	        </Button>
         </WrapPanel>
-	    <Canvas x:Name="thisCanv" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" ZIndex="-1">
+	    <Canvas x:Name="ThisCanv" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" ZIndex="-1">
 	    </Canvas>
     </Grid>
 </Window>
