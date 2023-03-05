@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\sasha\\source\\repos\\Geometry\\Geometry\\Geometry.csproj",
+      "projectUniqueName": "C:\\Users\\sasha\\source\\repos\\cross_ttd\\Geometry\\Geometry.csproj",
       "projectName": "Geometry",
-      "projectPath": "C:\\Users\\sasha\\source\\repos\\Geometry\\Geometry\\Geometry.csproj",
+      "projectPath": "C:\\Users\\sasha\\source\\repos\\cross_ttd\\Geometry\\Geometry.csproj",
       "packagesPath": "C:\\Users\\sasha\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\sasha\\source\\repos\\Geometry\\Geometry\\obj\\",
+      "outputPath": "C:\\Users\\sasha\\source\\repos\\cross_ttd\\Geometry\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\sasha\\AppData\\Roaming\\NuGet\\NuGet.Config",
