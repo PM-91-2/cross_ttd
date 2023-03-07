@@ -8,20 +8,23 @@ namespace Geometry
 	public class Rectangle : IFigure
 	{
 		// Поля
-		private List<Vector2> _points;//readonly ДИМА!!!
+		private List<Vector2> _points;
 		private Vector2 _position;
-
-		//private List<Vector2> _localePoints;
-		//private List<Vector2> _rotatePoints;
-		//private List<Vector2> _movedPoints;
 
 
 		// Свойства
-		//public List<Vector2> Points { get; set; }
-		//public Vector2 Position { get; set; }
+		public string PathData
+		{
+			get
+			{
+				return string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
+					_points[0].X, _points[0].Y, _points[1].X, _points[1].Y,
+					_points[3].X, _points[3].Y, _points[2].X, _points[2].Y);
+			}
+		}
 
 		// Конструктор
-		public Rectangle(Vector2 point1, Vector2 point2, Vector2 position)
+		public Rectangle(Vector2 point1, Vector2 point2)
 		{
 			_points = new List<Vector2> {
 				point1,
@@ -32,7 +35,7 @@ namespace Geometry
 
 			// Порядок точек: левая верхняя, левая нижняя, правая верхняя, правая нижняя
 			_points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
-			_position = position;
+			_position = _points[0];
 		}
 
 		// Методы
@@ -55,7 +58,7 @@ namespace Geometry
 		}
 		public void Rotate(float angle)
 		{
-			float angleConvert = MathF.PI * angle / 180;
+			float angleConvert = (float)Math.PI * angle / 180;
 
 			List<Vector2> M = new List<Vector2> {
 				new Vector2((float)Math.Cos(angleConvert), -(float)Math.Sin(angleConvert)),
@@ -64,7 +67,7 @@ namespace Geometry
 
 			for (int i = 0; i < _points.Count; i++)
 				_points[i] = new Vector2((M[0].X *( _points[i].X - _position.X) + M[0].Y * (_points[i].Y - _position.Y) + _position.X),
-											   (M[1].X * (_points[i].X - _position.X) + M[1].Y * (_points[i].Y - _position.Y) + _position.Y);
+											   (M[1].X * (_points[i].X - _position.X) + M[1].Y * (_points[i].Y - _position.Y) + _position.Y));
 		}
 		public void Scale(float scaleX, float scaleY)
 		{
@@ -73,13 +76,5 @@ namespace Geometry
 			for (int i = 0; i < 4; i++) _points[i] = new Vector2(_points[i].X * scaleX, _points[i].Y * scaleY);
 			for (int i = 0; i < 4; i++) _points[i] += center;
 		}
-
-		public string Output
-        {
-			return string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z", _points[0].X, _points[0].Y,
-																		  _points[1].X, _points[1].Y,
-																		  _points[3].X, _points[3].Y,
-																		  _points[2].X, _points[2].Y);
-        }
 	}
 }
