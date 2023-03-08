@@ -23,6 +23,8 @@ namespace Geometry {
                 new Vector2(point1.X, point2.Y),
                 new Vector2(point2.X, point1.Y)
             };
+
+            // Порядок точек: левая верхняя, левая нижняя, правая верхняя, правая нижняя
             _points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
             _position = _points[0];
         }
