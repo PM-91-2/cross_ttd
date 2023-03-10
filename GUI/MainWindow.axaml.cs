@@ -1,5 +1,8 @@
+using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 
@@ -7,7 +10,10 @@ namespace CrossTTD;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+	private PointerPoint firstPoint;
+	private PointerPoint secondPoint;
+
+	public MainWindow()
     {
         InitializeComponent();
     }
@@ -69,5 +75,17 @@ public partial class MainWindow : Window
     private void ButtonCurvedOnClick(object? sender, RoutedEventArgs e)
     {
 	    throw new System.NotImplementedException();
+    }
+
+    protected void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+	    firstPoint = e.GetCurrentPoint(ThisCanv);
+    }
+
+    protected void OnCanvasPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+	    secondPoint = e.GetCurrentPoint(ThisCanv);
+	    Console.WriteLine(firstPoint);
+	    Console.WriteLine(secondPoint);
     }
 }
