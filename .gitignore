@@ -126,3 +126,6 @@ paket-files/
 .localhistory/
 .idea
 .vs
+
+*/obj
+*/bin
