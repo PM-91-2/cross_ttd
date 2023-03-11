@@ -8,13 +8,16 @@ namespace Geometry {
         private List<Vector2> _points;
         private Vector2 _position;
 
-        public string PathData {
-            get {
-                return string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
-                    _points[0].X, _points[0].Y, _points[1].X, _points[1].Y,
-                    _points[3].X, _points[3].Y, _points[2].X, _points[2].Y);
-            }
-        }
+        private string _name = "Rectangle";
+        private float _width;
+        private float _height;
+
+        public string InputOutputData => string.Format("Name: {0}, Width: {1}, Height: {2}, PivotPoint: {3}",_name, _width, _height, _points[0]);
+
+        public string PathData =>
+            string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
+                _points[0].X, _points[0].Y, _points[1].X, _points[1].Y,
+                _points[3].X, _points[3].Y, _points[2].X, _points[2].Y);
 
         public Rectangle(Vector2 point1, Vector2 point2) {
             _points = new List<Vector2> {
@@ -27,6 +30,8 @@ namespace Geometry {
             // Порядок точек: левая верхняя, левая нижняя, правая верхняя, правая нижняя
             _points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
             _position = _points[0];
+            _height = Math.Abs(_points[0].Y - _points[1].Y);
+            _width = Math.Abs(_points[0].X - _points[2].X);
         }
 
         public bool IsPointInFigure(Vector2 point, float eps) {

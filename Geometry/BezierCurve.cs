@@ -4,6 +4,8 @@ namespace Geometry {
     public class BezierCurve : IFigure {
         public string PathData { get; }
 
+        public string InputOutputData { get; }
+
         public bool IsPointInFigure(Vector2 point, float eps) {
             return true;
         }
