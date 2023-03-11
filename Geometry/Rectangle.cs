@@ -5,14 +5,14 @@ using System;
 
 namespace Geometry {
     public class Rectangle : IFigure {
+        private const string NAME = "Rectangle";
+
         private List<Vector2> _points;
         private Vector2 _position;
-
-        private string _name = "Rectangle";
         private float _width;
         private float _height;
 
-        public string InputOutputData => string.Format("Name: {0}, Width: {1}, Height: {2}, PivotPoint: {3}",_name, _width, _height, _points[0]);
+        public string InputOutputData => string.Format("Name: {0}, Width: {1}, Height: {2}, PivotPoint: {3}", NAME, _width, _height, _points[0]);
 
         public string PathData =>
             string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
