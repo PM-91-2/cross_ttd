@@ -53,11 +53,7 @@ public partial class MainWindow : Window
         mySolidColorBrush.Color = Color.FromArgb(255, 255, 255, 0);
         rectangle.Fill = mySolidColorBrush;
 
-
-	    rectangle.Width = 50;
-	    rectangle.Height = 25;
-
-	    ThisCanv.Children.Add(rectangle);
+        ThisCanv.Children.Add(rectangle);
     }
 
     private void ButtonCircleOnClick(object? sender, RoutedEventArgs e)
