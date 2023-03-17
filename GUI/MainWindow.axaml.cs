@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -45,12 +46,13 @@ public partial class MainWindow : Window
 
     private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
     {
-	    Rectangle rectangle = new Rectangle();
-	    SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-	    mySolidColorBrush.Color = Color.FromArgb(255, 0, 255, 0);
-	    rectangle.Fill = mySolidColorBrush;
-	    rectangle.StrokeThickness = 2;
-	    rectangle.Stroke = Brushes.Black;
+        Geometry.Rectangle rectangle_tmp = new Geometry.Rectangle(new Vector2(1, 2), new Vector2(200, 400));
+        var rectangle = new Path();
+        rectangle.Data = Avalonia.Media.Geometry.Parse(rectangle_tmp.PathData);
+        SolidColorBrush mySolidColorBrush = new SolidColorBrush();
+        mySolidColorBrush.Color = Color.FromArgb(255, 255, 255, 0);
+        rectangle.Fill = mySolidColorBrush;
+
 
 	    rectangle.Width = 50;
 	    rectangle.Height = 25;
