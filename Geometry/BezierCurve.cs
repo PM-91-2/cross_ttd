@@ -7,6 +7,7 @@ namespace Geometry {
         private const string NAME = "Curve";
         
         private List<Vector2> _points;
+        private List<Vector2> _bounds;
         private Vector2 _position;
 
         public string PathData =>
@@ -17,6 +18,10 @@ namespace Geometry {
         public string InputOutputData => 
             String.Format("Name: {0} Start_point: {1} Control_point1: {2} Control_point2: {3} End_point: {4}", NAME, _points[0], _points[1], _points[2], _points[3]);
 
+        public string BoundsData => string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
+            _bounds[0].X, _bounds[0].Y, _bounds[1].X, _bounds[1].Y,
+            _bounds[3].X, _bounds[3].Y, _bounds[2].X, _bounds[2].Y);
+        
         private BezierCurve(Vector2 point1, Vector2 point2, Vector2 point3, Vector2 point4) {
             _points = new List<Vector2> {
                 point1,
@@ -28,9 +33,11 @@ namespace Geometry {
             _position = _points[0];
         }
 
-        public bool IsPointInFigure(Vector2 point, float eps) {
+        public bool IsPointInFigure(Vector2 point) {
             return true;
         }
+
+        public int isPointNearVerticle(Vector2 point) => 2;
 
         // todo: change implementation
         public void Move(Vector2 startPosition, Vector2 newPosition) {
@@ -44,6 +51,8 @@ namespace Geometry {
 
         public void Rotate(float angle) { }
 
-        public void Scale(float scaleX, float scaleY) { }
+        public void Scale(Vector2 point, int flag) { }
+
+        public void SortPoints() { }
     }
 }

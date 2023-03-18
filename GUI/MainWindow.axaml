@@ -47,7 +47,7 @@
 	            PointerPressed="OnCanvasPointerPressed"
 	            PointerReleased="OnCanvasPointerReleased"
 	            Background="White"
-	            PointerMoved="ThisCanv_OnPointerMoved"
+	            PointerMoved="OnCanvasPointerMoved"
 	            >
 	    </Canvas>
 	    <TextBlock 

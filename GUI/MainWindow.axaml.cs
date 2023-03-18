@@ -20,6 +20,7 @@ public partial class MainWindow : Window
     private PointerPoint moveSavePoint;
     private List<bool> moveFlagArray = new List<bool>();
     private List<bool> scaleFlagArray = new List<bool>();
+    private int _pointflag = -1;
 
     public MainWindow()
     {
@@ -51,7 +52,7 @@ public partial class MainWindow : Window
         throw new System.NotImplementedException();
     }
 
-    private Path DrawFigure(IFigure figure)
+    private List<Path> DrawFigure(IFigure figure)
     {
         System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
@@ -63,8 +64,16 @@ public partial class MainWindow : Window
         SolidColorBrush mySolidColorBrush = new SolidColorBrush();
         mySolidColorBrush.Color = Avalonia.Media.Color.FromArgb(255, 255, 255, 0);
         pathFigure.Fill = mySolidColorBrush;
+        
+        var pathBounds = new Path();
+        var tmpbounds = figure.BoundsData;
+        pathBounds.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
+        SolidColorBrush mySolidColorBrushBounds = new SolidColorBrush();
+        mySolidColorBrushBounds.Color = Avalonia.Media.Color.FromArgb(255, 0, 0, 0);
+        pathBounds.Stroke = mySolidColorBrushBounds;
+        pathBounds.StrokeThickness = 2;
 
-        return pathFigure;
+        return new List<Path>(){pathFigure, pathBounds};
     }
 
 
@@ -75,8 +84,8 @@ public partial class MainWindow : Window
         System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
 
         var pathFigure = new Path();
-        var tmp = figure.PathData;
-        pathFigure.Data = Avalonia.Media.Geometry.Parse(figure.PathData);
+        var tmp = figure.BoundsData;
+        pathFigure.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
         SolidColorBrush mySolidColorBrush = new SolidColorBrush();
         mySolidColorBrush.Color = Avalonia.Media.Color.FromArgb(255, 0, 0, 0);
         pathFigure.Stroke = mySolidColorBrush;
@@ -90,18 +99,18 @@ public partial class MainWindow : Window
     {
         for (int i = 0; i < figureArray.Count; i++)
         {
-            Path pathFigure = DrawFigure(figureArray[i]);
-            Path pathFigureBounds = DrawBounds(figureArray[i]);
+            List<Path> pathFigure = DrawFigure(figureArray[i]);
+            // Path pathFigureBounds = DrawBounds(figureArray[i]);
             Grid grid = new Grid();
-            grid.Children.Add(pathFigure);
-            grid.Children.Add(pathFigureBounds);
+            grid.Children.Add(pathFigure[0]);
+            grid.Children.Add(pathFigure[1]);
             ThisCanv.Children.Add(grid);
         }
     }
 
     private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
     {
-        createRectangle();
+        CreateRectangle();
     }
 
     private void ButtonCircleOnClick(object? sender, RoutedEventArgs e)
@@ -126,20 +135,18 @@ public partial class MainWindow : Window
     protected void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         Vector2 currentPoint = new Vector2((float)e.GetCurrentPoint(ThisCanv).Position.X, (float)e.GetCurrentPoint(ThisCanv).Position.Y);
-        for (int i = 0; i < figureArray.Count; i++)
-        {
-            if (boundsArray[i].IsPointInFigure(currentPoint))
-            {
-                if (boundsArray[i].isPointNearVerticle(currentPoint))
-                {
-                    scaleFlagArray[i] = true;
-                }
-                else
-                {
-                    moveFlagArray[i] = true;
-                }
-                moveSavePoint = e.GetCurrentPoint(ThisCanv);
-            }
+        for (int i = 0; i < figureArray.Count; i++) {
+            _pointflag = figureArray[i].isPointNearVerticle(currentPoint);
+          if (_pointflag != -1) {
+              moveSavePoint = e.GetCurrentPoint(ThisCanv);
+              scaleFlagArray[i] = true;
+              break;
+          } else if (figureArray[i].IsPointInFigure(currentPoint)) {
+              moveSavePoint = e.GetCurrentPoint(ThisCanv);
+              moveFlagArray[i] = true;
+              break;
+          }
+                // moveSavePoint = e.GetCurrentPoint(ThisCanv);
         }
     }
 
@@ -149,6 +156,7 @@ public partial class MainWindow : Window
         {
             if (moveFlagArray[i]) moveFlagArray[i] = false;
             if (scaleFlagArray[i]) scaleFlagArray[i] = false;
+            figureArray[i].SortPoints();
         }
     }
 
@@ -165,35 +173,32 @@ public partial class MainWindow : Window
                 Vector2 p1 = new Vector2((float)moveSavePoint.Position.X, (float)moveSavePoint.Position.Y);
                 Vector2 p2 = new Vector2((float)e.GetCurrentPoint(ThisCanv).Position.X, (float)e.GetCurrentPoint(ThisCanv).Position.Y);
                 figureArray[i].Move(p1, p2);
-                boundsArray[i].Move(p1, p2);
+                // figureArray[i + 1].Move(p1, p2);
                 moveSavePoint = e.GetCurrentPoint(ThisCanv);
                 DrawFigure(figureArray[i]);
-                DrawBounds(boundsArray[i]);
+                // DrawBounds(boundsArray[i]);
             }
 
             // Масштабирование
             if (scaleFlagArray[i])
             {
                 Vector2 point = new Vector2((float)e.GetCurrentPoint(ThisCanv).Position.X, (float)e.GetCurrentPoint(ThisCanv).Position.Y);
-                figureArray[i].Scale(point);
-                boundsArray[i].Scale(point);
+                figureArray[i].Scale(point, _pointflag);
+                // boundsArray[i].Scale(point);
                 // moveSavePoint = e.GetCurrentPoint(ThisCanv);
                 DrawFigure(figureArray[i]);
-                DrawBounds(boundsArray[i]);
+                // DrawBounds(boundsArray[i]);
             }
         }
     }
 
-    private void createRectangle()
+    private void CreateRectangle()
     {
         Geometry.IFigure rectangle = new Geometry.Rectangle(new Vector2(1.5f, 2), new Vector2(200, 400));
-        Geometry.IFigure rectangle_bounds = new Geometry.Rectangle(new Vector2(1.5f, 2), new Vector2(200, 400));
-        // rectangle.Rotate(45.0f);
+        rectangle.Rotate(45.0f);
         // rectangle_bounds.Rotate(45.0f);
         DrawFigure(rectangle);
-        DrawBounds(rectangle_bounds);
         figureArray.Add(rectangle);
-        boundsArray.Add(rectangle_bounds);
         moveFlagArray.Add(false);
         scaleFlagArray.Add(false);
     }

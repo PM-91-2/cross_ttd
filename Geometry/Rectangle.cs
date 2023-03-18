@@ -17,6 +17,14 @@ namespace Geometry {
             }
         }
 
+        public string BoundsData => 
+            string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
+                _bounds[0].X, _bounds[0].Y, _bounds[1].X, _bounds[1].Y,
+                _bounds[3].X, _bounds[3].Y, _bounds[2].X, _bounds[2].Y);
+
+
+        public string InputOutputData => PathData;
+
         public Rectangle(Vector2 point1, Vector2 point2) {
             _points = new List<Vector2> {
                 point1,
@@ -26,8 +34,9 @@ namespace Geometry {
             };
 
             // Порядок точек: левая нижняя, левая верхняя, правая нижняя, правая верхняя
-            _points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
-            _position = _points[0];
+            //_points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
+             SortPoints();
+            _position = new Vector2(_points[1].X + (_points[2].X - _points[1].X) / 2, _points[1].Y + (_points[2].Y - _points[1].Y) / 2);
             _bounds = new List<Vector2> { _points[0], _points[1], _points[2], _points[3] };
         }
 
@@ -40,13 +49,27 @@ namespace Geometry {
             return point1 > 0 && point2 > 0 && point3 > 0 && point4 > 0;
         }
 
-        public bool isPointNearVerticle(Vector2 point)
+        public int isPointNearVerticle(Vector2 point)
         {
-            float eps = 50f;
-            return Vector2.Distance(_points[0], point) < eps ||
-                Vector2.Distance(_points[1], point) < eps ||
-                Vector2.Distance(_points[2], point) < eps ||
-                Vector2.Distance(_points[3], point) < eps;
+            float eps = 25.0f;
+            if (Vector2.Distance(_bounds[0], point) < eps) {
+                return 0;
+            } else if (Vector2.Distance(_bounds[1], point) < eps) {
+                return 1;
+            } else if (Vector2.Distance(_bounds[2], point) < eps) {
+                return 2;
+            } else if (Vector2.Distance(_bounds[3], point) < eps)
+            {
+                return 3;
+            } else {
+                return -1;
+            }
+            
+            
+            // return Vector2.Distance(_bounds[0], point) < eps ||
+            //     Vector2.Distance(_bounds[1], point) < eps ||
+            //     Vector2.Distance(_bounds[2], point) < eps ||
+            //     Vector2.Distance(_bounds[3], point) < eps;
         }
 
         public void Move(Vector2 startPosition, Vector2 newPosition) {
@@ -55,6 +78,10 @@ namespace Geometry {
 
             for (int i = 0; i < _points.Count; i++)
                 _points[i] = new Vector2(_points[i].X + moveVector.X, _points[i].Y + moveVector.Y);
+            
+            for (int i = 0; i < _bounds.Count; i++)
+                _bounds[i] = new Vector2(_bounds[i].X + moveVector.X, _bounds[i].Y + moveVector.Y);
+            
         }
 
         public void Rotate(float angle) {
@@ -75,32 +102,38 @@ namespace Geometry {
             for (int i = 0; i < 4; i++) _points[i] += center;
         }
 
-        public void Scale(Vector2 point) {
-            float eps = 50f;
-            if (Vector2.Distance(point, _points[3]) < eps)
+        public void Scale(Vector2 point, int flag) {
+            // float eps = 50f;
+            if (flag == 3)
             {
                 _points[1] = new Vector2(_points[1].X, point.Y);
                 _points[2] = new Vector2(point.X, _points[2].Y);
                 _points[3] = new Vector2(point.X, point.Y);
             }
-            else if (Vector2.Distance(point, _points[2]) < eps)
+            else if (flag == 2)
             {
                 _points[0] = new Vector2(_points[0].X, point.Y);
                 _points[3] = new Vector2(point.X, _points[3].Y);
                 _points[2] = new Vector2(point.X, point.Y);
             }
-            else if (Vector2.Distance(point, _points[1]) < eps)
+            else if (flag == 1)
             {
                 _points[3] = new Vector2(_points[3].X, point.Y);
                 _points[0] = new Vector2(point.X, _points[0].Y);
                 _points[1] = new Vector2(point.X, point.Y);
             }
-            else if (Vector2.Distance(point, _points[0]) < eps)
+            else if (flag == 0)
             {
                 _points[2] = new Vector2(_points[2].X, point.Y);
                 _points[1] = new Vector2(point.X, _points[1].Y);
                 _points[0] = new Vector2(point.X, point.Y);
             }
+            _bounds = new List<Vector2> { _points[0], _points[1], _points[2], _points[3] };
+        }
+
+        public void SortPoints() {
+            _points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
+            _bounds = new List<Vector2> { _points[0], _points[1], _points[2], _points[3] };
         }
     }
 }
