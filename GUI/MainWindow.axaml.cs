@@ -19,6 +19,7 @@ enum EnumState
     Line,
     Ellipse,
     Free,
+    Curve
 }
 
 
