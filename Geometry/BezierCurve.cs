@@ -37,7 +37,7 @@ namespace Geometry {
             return true;
         }
 
-        public int isPointNearVerticle(Vector2 point) => 2;
+        public int IsPointNearVerticle(Vector2 point) => 2;
 
         // todo: change implementation
         public void Move(Vector2 startPosition, Vector2 newPosition) {
@@ -54,5 +54,7 @@ namespace Geometry {
         public void Scale(Vector2 point, int flag) { }
 
         public void SortPoints() { }
+        
+        
     }
 }

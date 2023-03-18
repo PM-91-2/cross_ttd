@@ -8,6 +8,16 @@ namespace Geometry {
         private List<Vector2> _points;
         private List<Vector2> _bounds;
         private Vector2 _position;
+        private float _angle = 0f;
+
+        private void RebuildBounds()
+        {
+            float eps = 0.01f;
+            if (_angle >= 0.0f && _angle < 90.0f) {
+                
+            }
+            
+        }
 
         public string PathData {
             get {
@@ -32,12 +42,10 @@ namespace Geometry {
                 new Vector2(point1.X, point2.Y),
                 new Vector2(point2.X, point1.Y)
             };
-
+            
             // Порядок точек: левая нижняя, левая верхняя, правая нижняя, правая верхняя
-            //_points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
-             SortPoints();
+            SortPoints();
             _position = new Vector2(_points[1].X + (_points[2].X - _points[1].X) / 2, _points[1].Y + (_points[2].Y - _points[1].Y) / 2);
-            _bounds = new List<Vector2> { _points[0], _points[1], _points[2], _points[3] };
         }
 
         public bool IsPointInFigure(Vector2 point) {
@@ -49,7 +57,7 @@ namespace Geometry {
             return point1 > 0 && point2 > 0 && point3 > 0 && point4 > 0;
         }
 
-        public int isPointNearVerticle(Vector2 point)
+        public int IsPointNearVerticle(Vector2 point)
         {
             float eps = 25.0f;
             if (Vector2.Distance(_bounds[0], point) < eps) {
@@ -84,7 +92,11 @@ namespace Geometry {
             
         }
 
-        public void Rotate(float angle) {
+        public void Rotate(float angle)
+        {
+            _angle += angle;
+            _angle = _angle % 360.0f;
+            float eps = 0.01f;
             float angleConvert = (float)Math.PI * angle / 180;
             List<Vector2> rotateMatrix = new List<Vector2> {
                 new Vector2((float)Math.Cos(angleConvert), -(float)Math.Sin(angleConvert)),
@@ -100,30 +112,30 @@ namespace Geometry {
                     rotateMatrix[1].X * _points[i].X +
                     rotateMatrix[1].Y * _points[i].Y);
             for (int i = 0; i < 4; i++) _points[i] += center;
+
+            if (angle >= (270f + eps) && angle < 360f) {
+                _bounds[0] = new Vector2(_points[1].X, _points[0].Y);
+                _bounds[1] = new Vector2(_points[1].X, _points[3].Y);
+                _bounds[2] = new Vector2(_points[2].X, _points[0].Y);
+                _bounds[3] = new Vector2(_points[2].X, _points[3].Y);
+            }
         }
 
         public void Scale(Vector2 point, int flag) {
             // float eps = 50f;
-            if (flag == 3)
-            {
+            if (flag == 3) {
                 _points[1] = new Vector2(_points[1].X, point.Y);
                 _points[2] = new Vector2(point.X, _points[2].Y);
                 _points[3] = new Vector2(point.X, point.Y);
-            }
-            else if (flag == 2)
-            {
+            } else if (flag == 2) {
                 _points[0] = new Vector2(_points[0].X, point.Y);
                 _points[3] = new Vector2(point.X, _points[3].Y);
                 _points[2] = new Vector2(point.X, point.Y);
-            }
-            else if (flag == 1)
-            {
+            } else if (flag == 1) {
                 _points[3] = new Vector2(_points[3].X, point.Y);
                 _points[0] = new Vector2(point.X, _points[0].Y);
                 _points[1] = new Vector2(point.X, point.Y);
-            }
-            else if (flag == 0)
-            {
+            } else if (flag == 0) {
                 _points[2] = new Vector2(_points[2].X, point.Y);
                 _points[1] = new Vector2(point.X, _points[1].Y);
                 _points[0] = new Vector2(point.X, point.Y);
@@ -133,7 +145,9 @@ namespace Geometry {
 
         public void SortPoints() {
             _points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
-            _bounds = new List<Vector2> { _points[0], _points[1], _points[2], _points[3] };
+            _bounds = new List<Vector2> { _points[0] + new Vector2(-10f, 10f), _points[1] + new Vector2(-10f, -10f), _points[2] + new Vector2(10f, 10f),
+                _points[3] + new Vector2(10f, -10f) };
         }
     }
+    
 }

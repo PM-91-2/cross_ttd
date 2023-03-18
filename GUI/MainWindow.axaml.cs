@@ -16,10 +16,11 @@ namespace CrossTTD;
 public partial class MainWindow : Window
 {
     public List<Geometry.IFigure> figureArray = new List<Geometry.IFigure>();
-    public List<Geometry.IFigure> boundsArray = new List<Geometry.IFigure>();
+    // public List<Geometry.IFigure> boundsArray = new List<Geometry.IFigure>();
     private PointerPoint moveSavePoint;
     private List<bool> moveFlagArray = new List<bool>();
     private List<bool> scaleFlagArray = new List<bool>();
+    private List<bool> IsActive = new List<bool>();
     private int _pointflag = -1;
 
     public MainWindow()
@@ -52,18 +53,23 @@ public partial class MainWindow : Window
         throw new System.NotImplementedException();
     }
 
-    private List<Path> DrawFigure(IFigure figure)
-    {
+    private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke) {
+        
         System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
         System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
 
         var pathFigure = new Path();
         var tmp = figure.PathData;
+        
         pathFigure.Data = Avalonia.Media.Geometry.Parse(figure.PathData);
         SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-        mySolidColorBrush.Color = Avalonia.Media.Color.FromArgb(255, 255, 255, 0);
+        mySolidColorBrush.Color = Avalonia.Media.Color.FromArgb(argb_fill[0], argb_fill[1], argb_fill[2], argb_fill[3]);
         pathFigure.Fill = mySolidColorBrush;
+        SolidColorBrush mySolidColorBrush2 = new SolidColorBrush();
+        mySolidColorBrush2.Color = Avalonia.Media.Color.FromArgb(arbg_stroke[0], arbg_stroke[1], arbg_stroke[2], arbg_stroke[3]);
+        pathFigure.Stroke = mySolidColorBrush2;
+        pathFigure.StrokeThickness = 4;
         
         var pathBounds = new Path();
         var tmpbounds = figure.BoundsData;
@@ -74,6 +80,7 @@ public partial class MainWindow : Window
         pathBounds.StrokeThickness = 2;
 
         return new List<Path>(){pathFigure, pathBounds};
+        
     }
 
 
@@ -97,9 +104,9 @@ public partial class MainWindow : Window
 
     private void DrawAll()
     {
-        for (int i = 0; i < figureArray.Count; i++)
-        {
-            List<Path> pathFigure = DrawFigure(figureArray[i]);
+        for (int i = 0; i < figureArray.Count; i++) {
+            List<Path> pathFigure = DrawFigure(figureArray[i], new List<byte>(){255, 255, 255, 0},
+                new List<byte>(){255, 90, 255, 0});  //todo: fix tmp args
             // Path pathFigureBounds = DrawBounds(figureArray[i]);
             Grid grid = new Grid();
             grid.Children.Add(pathFigure[0]);
@@ -108,9 +115,9 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
-    {
-        CreateRectangle();
+    private void ButtonSquareOnClick(object? sender, RoutedEventArgs e) {
+        CreateRectangle(new Vector2(1f, 1f), new Vector2(300f,400f), new List<byte>(){255, 255, 255, 0},
+            new List<byte>(){255, 90, 255, 0});
     }
 
     private void ButtonCircleOnClick(object? sender, RoutedEventArgs e)
@@ -132,11 +139,10 @@ public partial class MainWindow : Window
 	    throw new System.NotImplementedException();
     }
 
-    protected void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
+    protected void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e) {
         Vector2 currentPoint = new Vector2((float)e.GetCurrentPoint(ThisCanv).Position.X, (float)e.GetCurrentPoint(ThisCanv).Position.Y);
         for (int i = 0; i < figureArray.Count; i++) {
-            _pointflag = figureArray[i].isPointNearVerticle(currentPoint);
+            _pointflag = figureArray[i].IsPointNearVerticle(currentPoint);
           if (_pointflag != -1) {
               moveSavePoint = e.GetCurrentPoint(ThisCanv);
               scaleFlagArray[i] = true;
@@ -150,56 +156,52 @@ public partial class MainWindow : Window
         }
     }
 
-    protected void OnCanvasPointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        for (int i = 0; i < figureArray.Count; i++)
-        {
+    protected void OnCanvasPointerReleased(object? sender, PointerReleasedEventArgs e) {
+        for (int i = 0; i < figureArray.Count; i++) {
             if (moveFlagArray[i]) moveFlagArray[i] = false;
             if (scaleFlagArray[i]) scaleFlagArray[i] = false;
             figureArray[i].SortPoints();
         }
     }
 
-    protected void OnCanvasPointerMoved(object? sender, PointerEventArgs e)
-    {
+    protected void OnCanvasPointerMoved(object? sender, PointerEventArgs e) {
         ThisCanv.Children.Clear();
         DrawAll();
 
-        for (int i = 0; i < figureArray.Count; i++)
-        {
+        for (int i = 0; i < figureArray.Count; i++) {
             // Перетаскивание
-            if (moveFlagArray[i])
-            {
+            if (moveFlagArray[i]) {
                 Vector2 p1 = new Vector2((float)moveSavePoint.Position.X, (float)moveSavePoint.Position.Y);
                 Vector2 p2 = new Vector2((float)e.GetCurrentPoint(ThisCanv).Position.X, (float)e.GetCurrentPoint(ThisCanv).Position.Y);
                 figureArray[i].Move(p1, p2);
                 // figureArray[i + 1].Move(p1, p2);
                 moveSavePoint = e.GetCurrentPoint(ThisCanv);
-                DrawFigure(figureArray[i]);
+                DrawFigure(figureArray[i], new List<byte>(){255, 255, 255, 0},
+                    new List<byte>(){255, 90, 255, 0}); // todo: fix tmp args
                 // DrawBounds(boundsArray[i]);
             }
 
             // Масштабирование
-            if (scaleFlagArray[i])
-            {
+            if (scaleFlagArray[i]) {
                 Vector2 point = new Vector2((float)e.GetCurrentPoint(ThisCanv).Position.X, (float)e.GetCurrentPoint(ThisCanv).Position.Y);
                 figureArray[i].Scale(point, _pointflag);
                 // boundsArray[i].Scale(point);
                 // moveSavePoint = e.GetCurrentPoint(ThisCanv);
-                DrawFigure(figureArray[i]);
+                DrawFigure(figureArray[i], new List<byte>(){255, 255, 255, 0},
+                    new List<byte>(){255, 90, 255, 0}); // todo: fix tmp args
                 // DrawBounds(boundsArray[i]);
             }
         }
     }
 
-    private void CreateRectangle()
-    {
-        Geometry.IFigure rectangle = new Geometry.Rectangle(new Vector2(1.5f, 2), new Vector2(200, 400));
-        rectangle.Rotate(45.0f);
+    public void CreateRectangle(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> arbg_stroke) {
+        Geometry.IFigure rectangle = new Geometry.Rectangle(point1, point2);
+        //rectangle.Rotate(300.0f);
         // rectangle_bounds.Rotate(45.0f);
-        DrawFigure(rectangle);
+        DrawFigure(rectangle, argb_fill, arbg_stroke);
         figureArray.Add(rectangle);
         moveFlagArray.Add(false);
         scaleFlagArray.Add(false);
     }
+    
 }
