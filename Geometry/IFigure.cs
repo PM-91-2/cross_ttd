@@ -1,12 +1,19 @@
-using System.Numerics;
+﻿using System.Numerics;
+using System.Collections.Generic;
 
 namespace Geometry {
     public interface IFigure {
+        string InputOutputData { get; }
+
         string PathData { get; }
-        bool IsPointInFigure(Vector2 point, float eps);
+        string BoundsData { get;  }
+        bool IsPointInFigure(Vector2 point);
+        public int IsPointNearVerticle(Vector2 point);
         void Move(Vector2 startPosition, Vector2 newPosition);
         void Rotate(float angle);
-        void Scale(float scaleX, float scaleY);
+        void Scale(Vector2 point, int flag);
+
+        void SortPoints();
     }
 }
 
