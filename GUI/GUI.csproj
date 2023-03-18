@@ -43,5 +43,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Geometry\Geometry.csproj" />
+      <ProjectReference Include="..\IO\IO.csproj" />
+      <ProjectReference Include="..\Logic\Logic.csproj" />
     </ItemGroup>
 </Project>
