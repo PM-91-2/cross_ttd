@@ -4,7 +4,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CrossTTD.MainWindow"
-        x:Name="CrossTtd"
         Title="GUI">
     <Grid ShowGridLines="True" Margin="3" RowDefinitions="30,*" ColumnDefinitions="*, *, *" ZIndex="0">
         <DockPanel ZIndex="0"
@@ -46,14 +45,7 @@
 	            ZIndex="-1"
 	            PointerPressed="OnCanvasPointerPressed"
 	            PointerReleased="OnCanvasPointerReleased"
-	            Background="White"
-	            PointerMoved="OnCanvasPointerMoved"
-	            >
+	            Background="White">
 	    </Canvas>
-	    <TextBlock 
-		    Grid.Row="1" 
-		    Grid.Column="0" 
-		    VerticalAlignment="Bottom" 
-		    Text="0; 0"> </TextBlock>
     </Grid>
 </Window>
