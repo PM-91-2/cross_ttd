@@ -39,6 +39,11 @@
 		        </StackPanel>
 	        </Button>
         </WrapPanel>
+        <WrapPanel Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" ZIndex="1" Orientation="Vertical" ItemWidth="35" VerticalAlignment="Center">
+			<Button Background="Red" Height="20" Width="20" Click="ButtonRedOnClick"></Button>
+	        <Button Background="Green" Height="20" Width="20" Click="ButtonGreenOnClick"></Button>
+	        <Button Background="Blue" Height="20" Width="20" Click="ButtonBlueOnClick"></Button>
+	    </WrapPanel>
 	    <Canvas x:Name="ThisCanv"
 	            Grid.Row="1"
 	            Grid.ColumnSpan="3"
@@ -48,7 +53,7 @@
 	            PointerReleased="OnCanvasPointerReleased"
 	            Background="White"
 	            PointerMoved="OnCanvasPointerMoved"
-				>
+	            >
 	    </Canvas>
 	    <TextBlock 
 		    Grid.Row="1" 
