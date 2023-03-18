@@ -1,23 +1,21 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System;
 
 namespace Geometry {
     public class Rectangle : IFigure {
-        private const string NAME = "Rectangle";
-
         private List<Vector2> _points;
+        private List<Vector2> _bounds;
         private Vector2 _position;
-        private float _width;
-        private float _height;
 
-        public string InputOutputData => string.Format("Name: {0}, Width: {1}, Height: {2}, PivotPoint: {3}", NAME, _width, _height, _points[0]);
-
-        public string PathData =>
-            string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
-                _points[0].X, _points[0].Y, _points[1].X, _points[1].Y,
-                _points[3].X, _points[3].Y, _points[2].X, _points[2].Y);
+        public string PathData {
+            get {
+                return string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
+                    _points[0].X, _points[0].Y, _points[1].X, _points[1].Y,
+                    _points[3].X, _points[3].Y, _points[2].X, _points[2].Y);
+            }
+        }
 
         public Rectangle(Vector2 point1, Vector2 point2) {
             _points = new List<Vector2> {
@@ -27,20 +25,28 @@ namespace Geometry {
                 new Vector2(point2.X, point1.Y)
             };
 
-            // Порядок точек: левая верхняя, левая нижняя, правая верхняя, правая нижняя
+            // Порядок точек: левая нижняя, левая верхняя, правая нижняя, правая верхняя
             _points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
             _position = _points[0];
-            _height = Math.Abs(_points[0].Y - _points[1].Y);
-            _width = Math.Abs(_points[0].X - _points[2].X);
+            _bounds = new List<Vector2> { _points[0], _points[1], _points[2], _points[3] };
         }
 
-        public bool IsPointInFigure(Vector2 point, float eps) {
+        public bool IsPointInFigure(Vector2 point) {
             var point1 = GeometryUtils.RectangleSideProduct(point, _points[0], _points[1]);
             var point2 = GeometryUtils.RectangleSideProduct(point, _points[1], _points[3]);
             var point3 = GeometryUtils.RectangleSideProduct(point, _points[3], _points[2]);
             var point4 = GeometryUtils.RectangleSideProduct(point, _points[2], _points[0]);
 
             return point1 > 0 && point2 > 0 && point3 > 0 && point4 > 0;
+        }
+
+        public bool isPointNearVerticle(Vector2 point)
+        {
+            float eps = 50f;
+            return Vector2.Distance(_points[0], point) < eps ||
+                Vector2.Distance(_points[1], point) < eps ||
+                Vector2.Distance(_points[2], point) < eps ||
+                Vector2.Distance(_points[3], point) < eps;
         }
 
         public void Move(Vector2 startPosition, Vector2 newPosition) {
@@ -57,21 +63,44 @@ namespace Geometry {
                 new Vector2((float)Math.Cos(angleConvert), -(float)Math.Sin(angleConvert)),
                 new Vector2((float)Math.Sin(angleConvert), (float)Math.Cos(angleConvert))
             };
-
-            for (int i = 0; i < _points.Count; i++)
-                _points[i] = new Vector2(
-                    (rotateMatrix[0].X * (_points[i].X - _position.X) +
-                     rotateMatrix[0].Y * (_points[i].Y - _position.Y) + _position.X),
-                    (rotateMatrix[1].X * (_points[i].X - _position.X) +
-                     rotateMatrix[1].Y * (_points[i].Y - _position.Y) + _position.Y));
-        }
-
-        public void Scale(float scaleX, float scaleY) {
             Vector2 center = Vector2.Multiply(0.5f, _points[3] - _points[0]);
 
             for (int i = 0; i < 4; i++) _points[i] -= center;
-            for (int i = 0; i < 4; i++) _points[i] = new Vector2(_points[i].X * scaleX, _points[i].Y * scaleY);
+            for (int i = 0; i < _points.Count; i++)
+                _points[i] = new Vector2(
+                    rotateMatrix[0].X * _points[i].X +
+                    rotateMatrix[0].Y * _points[i].Y,
+                    rotateMatrix[1].X * _points[i].X +
+                    rotateMatrix[1].Y * _points[i].Y);
             for (int i = 0; i < 4; i++) _points[i] += center;
+        }
+
+        public void Scale(Vector2 point) {
+            float eps = 50f;
+            if (Vector2.Distance(point, _points[3]) < eps)
+            {
+                _points[1] = new Vector2(_points[1].X, point.Y);
+                _points[2] = new Vector2(point.X, _points[2].Y);
+                _points[3] = new Vector2(point.X, point.Y);
+            }
+            else if (Vector2.Distance(point, _points[2]) < eps)
+            {
+                _points[0] = new Vector2(_points[0].X, point.Y);
+                _points[3] = new Vector2(point.X, _points[3].Y);
+                _points[2] = new Vector2(point.X, point.Y);
+            }
+            else if (Vector2.Distance(point, _points[1]) < eps)
+            {
+                _points[3] = new Vector2(_points[3].X, point.Y);
+                _points[0] = new Vector2(point.X, _points[0].Y);
+                _points[1] = new Vector2(point.X, point.Y);
+            }
+            else if (Vector2.Distance(point, _points[0]) < eps)
+            {
+                _points[2] = new Vector2(_points[2].X, point.Y);
+                _points[1] = new Vector2(point.X, _points[1].Y);
+                _points[0] = new Vector2(point.X, point.Y);
+            }
         }
     }
 }
