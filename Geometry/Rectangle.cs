@@ -35,7 +35,7 @@ namespace Geometry {
 
             // Порядок точек: левая нижняя, левая верхняя, правая нижняя, правая верхняя
             SortPoints();
-            _bounds = new List<Vector2> { _points[0], _points[1], _points[2], _points[3] };
+            //_bounds = new List<Vector2> { _points[0], _points[1], _points[2], _points[3] };
         }
 
         public bool IsPointInFigure(Vector2 point) {
@@ -90,17 +90,17 @@ namespace Geometry {
                     rotateMatrix[1].X * _points[i].X + rotateMatrix[1].Y * _points[i].Y);
             for (int i = 0; i < 4; i++) _points[i] += center;
 
-            if (_angle >= (270f + eps) && _angle < 360f) {
+            if (_angle >= 270 && _angle < 360) {
                 _bounds[0] = new Vector2(_points[1].X - boundEps, _points[0].Y + boundEps);
                 _bounds[1] = new Vector2(_points[1].X - boundEps, _points[3].Y - boundEps);
                 _bounds[2] = new Vector2(_points[2].X + boundEps, _points[0].Y + boundEps);
                 _bounds[3] = new Vector2(_points[2].X + boundEps, _points[3].Y - boundEps);
-            } else if (_angle >= (180f + eps) && _angle < 270) {
+            } else if (_angle >= 180 && _angle < 270) {
                 _bounds[0] = new Vector2(_points[3].X - boundEps, _points[1].Y + boundEps);
                 _bounds[1] = new Vector2(_points[3].X - boundEps, _points[2].Y - boundEps);
                 _bounds[2] = new Vector2(_points[0].X + boundEps, _points[1].Y + boundEps);
                 _bounds[3] = new Vector2(_points[0].X + boundEps, _points[2].Y - boundEps);
-            } else if (_angle >= (90f + eps) && _angle < 180) {
+            } else if (_angle >= 90 && _angle < 180) {
                 _bounds[0] = new Vector2(_points[2].X - boundEps, _points[3].Y + boundEps);
                 _bounds[1] = new Vector2(_points[2].X - boundEps, _points[0].Y - boundEps);
                 _bounds[2] = new Vector2(_points[1].X + boundEps, _points[3].Y + boundEps);
@@ -115,47 +115,151 @@ namespace Geometry {
 
         public void Scale(Vector2 point, int flag) {
             if (flag == 3) {
-                _bounds[1] = new Vector2(_bounds[1].X, point.Y);
-                _bounds[2] = new Vector2(point.X, _bounds[2].Y);
-                _bounds[3] = new Vector2(point.X, point.Y);
+                bool x_changeble = (point.X - _bounds[0].X - 2 * Math.Abs(boundEps)) > 0;
+                bool y_changeble = (_bounds[2].Y - point.Y - 2 * Math.Abs(boundEps)) > 0;
+                if (x_changeble)
+                {
+                    _bounds[2] = new Vector2(point.X, _bounds[2].Y);
+                    _bounds[3] = new Vector2(point.X, _bounds[3].Y);
+                }
+                if (y_changeble)
+                {
+                    _bounds[1] = new Vector2(_bounds[1].X, point.Y);
+                    _bounds[3] = new Vector2(_bounds[3].X, point.Y);
+                }
             } else if (flag == 2) {
-                _bounds[0] = new Vector2(_bounds[0].X, point.Y);
-                _bounds[3] = new Vector2(point.X, _bounds[3].Y);
-                _bounds[2] = new Vector2(point.X, point.Y);
+                bool x_changeble = (point.X - _bounds[0].X - 2 * Math.Abs(boundEps)) > 0;
+                bool y_changeble = (point.Y - _bounds[1].Y - 2 * Math.Abs(boundEps)) > 0;
+                if (x_changeble)
+                {
+                    _bounds[3] = new Vector2(point.X, _bounds[3].Y);
+                    _bounds[2] = new Vector2(point.X, _bounds[2].Y);
+                }
+                if (y_changeble)
+                {
+                    _bounds[0] = new Vector2(_bounds[0].X, point.Y);
+                    _bounds[2] = new Vector2(_bounds[2].X, point.Y);
+                }
             } else if (flag == 1) {
-                _bounds[3] = new Vector2(_bounds[3].X, point.Y);
-                _bounds[0] = new Vector2(point.X, _bounds[0].Y);
-                _bounds[1] = new Vector2(point.X, point.Y);
+                bool x_changeble = (_bounds[3].X - point.X - 2 * Math.Abs(boundEps)) > 0;
+                bool y_changeble = (_bounds[0].Y - point.Y - 2 * Math.Abs(boundEps)) > 0;
+                if (x_changeble)
+                {
+                    _bounds[0] = new Vector2(point.X, _bounds[0].Y);
+                    _bounds[1] = new Vector2(point.X, _bounds[1].Y);
+                }
+                if (y_changeble)
+                {
+                    _bounds[3] = new Vector2(_bounds[3].X, point.Y);
+                    _bounds[1] = new Vector2(_bounds[1].X, point.Y);
+                }
             } else if (flag == 0) {
-                _bounds[2] = new Vector2(_bounds[2].X, point.Y);
-                _bounds[1] = new Vector2(point.X, _bounds[1].Y);
-                _bounds[0] = new Vector2(point.X, point.Y);
+                bool x_changeble = (_bounds[2].X - point.X - 2 * Math.Abs(boundEps)) > 0;
+                bool y_changeble = (point.Y - _bounds[1].Y - 2 * Math.Abs(boundEps)) > 0;
+                if (x_changeble)
+                {
+                    _bounds[1] = new Vector2(point.X, _bounds[1].Y);
+                    _bounds[0] = new Vector2(point.X, _bounds[0].Y);
+                }
+                if (y_changeble)
+                {
+                    _bounds[2] = new Vector2(_bounds[2].X, point.Y);
+                    _bounds[0] = new Vector2(_bounds[0].X, point.Y);
+                }
             }
 
-            if (_angle >= 270f && _angle < 360f)
+            if (_angle >= 270 && _angle < 360)
             {
                 float up1 = _points[0].X - _points[1].X;
                 float up2 = _points[2].X - _points[0].X;
                 float pX = 1 / (up1 + up2) * ((_bounds[2].X - boundEps) - (_bounds[0].X + boundEps));
+                if (float.IsInfinity(pX) || float.IsNaN(pX)) {
+                    pX = 0;
+                }
 
                 float left1 = _points[1].Y - _points[0].Y;
                 float left2 = _points[3].Y - _points[1].Y;
                 float pY = 1 / (left1 + left2) * ((_bounds[0].Y - boundEps) - (_bounds[1].Y + boundEps));
+                if (float.IsInfinity(pY) || float.IsNaN(pY)) {
+                    pY = 0;
+                }
 
                 _points[0] = new Vector2(_bounds[0].X + boundEps + up1 * pX, _bounds[0].Y - boundEps);
                 _points[1] = new Vector2(_bounds[0].X + boundEps, _bounds[0].Y - boundEps - left1 * pY);
                 _points[2] = new Vector2(_bounds[2].X - boundEps, _bounds[2].Y - boundEps - left2 * pY);
                 _points[3] = new Vector2(_bounds[1].X + boundEps + up2 * pX, _bounds[3].Y + boundEps);
+            } else if (_angle >= 180 && _angle < 270) {
+                float up1 = _points[1].X - _points[3].X;
+                float up2 = _points[0].X - _points[1].X;
+                float pX = 1 / (up1 + up2) * ((_bounds[2].X - boundEps) - (_bounds[0].X + boundEps));
+                if (float.IsInfinity(pX) || float.IsNaN(pX)) {
+                    pX = 0;
+                }
+
+                float left1 = _points[1].Y - _points[3].Y;
+                float left2 = _points[3].Y - _points[2].Y;
+                float pY = 1 / (left1 + left2) * ((_bounds[0].Y - boundEps) - (_bounds[1].Y + boundEps));
+                if (float.IsInfinity(pY) || float.IsNaN(pY)) {
+                    pY = 0;
+                }
+
+                _points[0] = new Vector2(_bounds[2].X - boundEps, _bounds[2].Y - boundEps - left2 * pY);
+                _points[1] = new Vector2(_bounds[0].X + boundEps + up1 * pX, _bounds[0].Y - boundEps);
+                _points[2] = new Vector2(_bounds[1].X + boundEps + up2 * pX, _bounds[1].Y + boundEps);
+                _points[3] = new Vector2(_bounds[0].X + boundEps, _bounds[0].Y - boundEps - left1 * pY);
+            } else if (_angle >= 90 && _angle < 180)
+            {
+                float up1 = _points[3].X - _points[2].X;
+                float up2 = _points[1].X - _points[3].X;
+                float pX = 1 / (up1 + up2) * ((_bounds[2].X - boundEps) - (_bounds[0].X + boundEps));
+                if (float.IsInfinity(pX) || float.IsNaN(pX))
+                {
+                    pX = 0;
+                }
+
+                float left1 = _points[3].Y - _points[2].Y;
+                float left2 = _points[2].Y - _points[0].Y;
+                float pY = 1 / (left1 + left2) * ((_bounds[0].Y - boundEps) - (_bounds[1].Y + boundEps));
+                if (float.IsInfinity(pY) || float.IsNaN(pY))
+                {
+                    pY = 0;
+                }
+
+                _points[0] = new Vector2(_bounds[1].X + boundEps + up2 * pX, _bounds[1].Y + boundEps);
+                _points[1] = new Vector2(_bounds[2].X - boundEps, _bounds[2].Y - boundEps - left2 * pY);
+                _points[2] = new Vector2(_bounds[0].X + boundEps, _bounds[0].Y - boundEps - left1 * pY);
+                _points[3] = new Vector2(_bounds[0].X + boundEps + up1 * pX, _bounds[0].Y - boundEps);
+            } else {
+                float up1 = _points[2].X - _points[0].X;
+                float up2 = _points[3].X - _points[2].X;
+                float pX = 1 / (up1 + up2) * ((_bounds[2].X - boundEps) - (_bounds[0].X + boundEps));
+                if (float.IsInfinity(pX) || float.IsNaN(pX))
+                {
+                    pX = 0;
+                }
+
+                float left1 = _points[2].Y - _points[0].Y;
+                float left2 = _points[0].Y - _points[1].Y;
+                float pY = 1 / (left1 + left2) * ((_bounds[0].Y - boundEps) - (_bounds[1].Y + boundEps));
+                if (float.IsInfinity(pY) || float.IsNaN(pY))
+                {
+                    pY = 0;
+                }
+
+                _points[0] = new Vector2(_bounds[0].X + boundEps, _bounds[0].Y - boundEps - left1 * pY);
+                _points[1] = new Vector2(_bounds[1].X + boundEps + up2 * pX, _bounds[1].Y + boundEps);
+                _points[2] = new Vector2(_bounds[0].X + boundEps + up1 * pX, _bounds[0].Y - boundEps);
+                _points[3] = new Vector2(_bounds[2].X - boundEps, _bounds[2].Y - boundEps - left2 * pY);
             }
             // для еще 3 четвертей
         }
 
         public void SortPoints() {
             _points = _points.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
-            //_bounds = new List<Vector2> {
-            //    _points[0] + new Vector2(-10f, 10f), _points[1] + new Vector2(-10f, -10f), _points[2] + new Vector2(10f, 10f),
-            //    _points[3] + new Vector2(10f, -10f)
-            //};
+            _bounds = new List<Vector2> {
+                _points[0] + new Vector2(-boundEps, boundEps), _points[1] + new Vector2(-boundEps, -boundEps), 
+                _points[2] + new Vector2(boundEps, boundEps), _points[3] + new Vector2(boundEps, -boundEps)
+            };
         }
     }
 }
