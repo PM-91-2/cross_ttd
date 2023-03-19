@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Geometry;
+using IO;
 
 
 namespace CrossTTD;
@@ -32,8 +33,17 @@ public partial class MainWindow : Window {
         throw new System.NotImplementedException();
     }
 
-    private void ButtonFilesOnClick(object? sender, RoutedEventArgs e) {
-        throw new System.NotImplementedException();
+    private void ButtonFilesOnClick(object? sender, RoutedEventArgs e)
+    {
+        IO.Svg svg = new IO.Svg();
+        var figures = svg.LoadFromSVG();
+        for (int i = 0; i < figures.Count; i++)
+        {
+            if (figures[i].name == "rectangle")
+            {
+                CreateRectangle(figures[i].P1_rect,figures[i].P2_rect,figures[i].fill,figures[i].stroke);
+            }
+        }
     }
 
     private void ButtonToolsOnClick(object? sender, RoutedEventArgs e) {
