@@ -48,7 +48,7 @@
 	            PointerReleased="OnCanvasPointerReleased"
 	            Background="White"
 	            PointerMoved="OnCanvasPointerMoved"
-	            >
+				>
 	    </Canvas>
 	    <TextBlock 
 		    Grid.Row="1" 
