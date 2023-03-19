@@ -64,7 +64,11 @@ namespace IO {
             {
                 line_fill = new List<byte>() { 255, 255, 255, 255 };
             }
-            ListFigureSvg figure = new ListFigureSvg(new Vector2(x1,y1),new Vector2(x2,y2),"line", line_stroke, line_fill, true);
+
+            List<Vector2> Points = new List<Vector2>();
+            Points.Add(new Vector2(x1,y1));
+            Points.Add(new Vector2(x2,y2));
+            ListFigureSvg figure = new ListFigureSvg(Points,"line", line_stroke, line_fill, true);
             figure_attributes.Add(figure);
         }
 
@@ -96,9 +100,14 @@ namespace IO {
             else
             {
                 rect_fill = new List<byte>() { 255, 255, 255, 255 };
-            } 
-            
-            ListFigureSvg figure = new ListFigureSvg(new Vector2(x_rect,y_rect),new Vector2(x_rect+Width, y_rect+Height),"rectangle", rect_stroke, rect_fill); // To do
+            }
+
+            List<Vector2> points = new List<Vector2>();
+            points.Add(new Vector2(x_rect,y_rect));
+            points.Add(new Vector2(x_rect+Width,y_rect));
+            points.Add(new Vector2(x_rect,y_rect+Height));
+            points.Add(new Vector2(x_rect+Width, y_rect+Height));
+            ListFigureSvg figure = new ListFigureSvg(points,"rectangle", rect_stroke, rect_fill); // To do
             figure_attributes.Add(figure);
         }
 
@@ -138,15 +147,53 @@ namespace IO {
         private void Path(SvgElement svgElem)
         {
             SvgPath? svgPath = svgElem as SvgPath;
-            //string fill ="";
+            string name="";
             List<Vector2> points = new List<Vector2>();
-            SvgCubicCurveSegment a = (SvgCubicCurveSegment)svgPath.PathData[1];
             if (svgPath.PathData.Count == 3)
             {
-                points.Add(new Vector2(svgPath.PathData[0].End.X, svgPath.PathData[0].End.Y));
-                points.Add(new Vector2(a.FirstControlPoint.X, a.FirstControlPoint.Y));
-                points.Add(new Vector2(a.SecondControlPoint.X, a.SecondControlPoint.Y));
-                points.Add(new Vector2(a.End.X, a.End.Y));
+                if ( svgPath.PathData[1] is SvgCubicCurveSegment)
+                {
+                    SvgCubicCurveSegment a = (SvgCubicCurveSegment)svgPath.PathData[1];
+                    if (a.FirstControlPoint.X != null && a.SecondControlPoint.X != null)
+                    {
+                        name = "bezie";
+                        points.Add(new Vector2(svgPath.PathData[0].End.X, svgPath.PathData[0].End.Y));
+                        points.Add(new Vector2(a.FirstControlPoint.X, a.FirstControlPoint.Y));
+                        points.Add(new Vector2(a.SecondControlPoint.X, a.SecondControlPoint.Y));
+                        points.Add(new Vector2(a.End.X, a.End.Y));
+                    }
+                }
+                if (svgPath.PathData[1] is SvgLineSegment)
+                {
+                    SvgLineSegment line = (SvgLineSegment)svgPath.PathData[1];
+
+                        name = "line";
+                        points.Add(new Vector2(svgPath.PathData[0].End.X, svgPath.PathData[0].End.Y));
+                        points.Add(new Vector2(line.End.X, line.End.Y));
+                    
+                }
+            }
+            //rectangle
+            bool flag = true;
+            if (svgPath.PathData.Count == 5)
+            {
+                for (int i = 1; i < svgPath.PathData.Count-1; i++)
+                {
+                    if (!(svgPath.PathData[i] is SvgLineSegment))
+                    {
+                        flag = false;
+                    }
+                }
+                if (flag)
+                {
+                    points.Add(new Vector2(svgPath.PathData[0].End.X, svgPath.PathData[0].End.Y));
+                    for (int i = 1; i < svgPath.PathData.Count-1; i++)
+                    {
+                        SvgLineSegment rectangle = (SvgLineSegment)svgPath.PathData[i];
+                        points.Add(new Vector2(rectangle.End.X, rectangle.End.Y));
+                    }
+                    name = "treangle";
+                }
             }
             List<byte> path_stroke;
             List<byte> path_fill;
@@ -168,9 +215,14 @@ namespace IO {
             else
             {
                 path_fill = new List<byte>() { 255, 255, 255, 255 };
-            } 
-            ListFigureSvg figure = new ListFigureSvg(points,"bezie", path_stroke, path_fill);
-            this.figure_attributes.Add(figure);
+            }
+
+            if (points.Count != 0)
+            {
+                ListFigureSvg figure = new ListFigureSvg(points,name, path_stroke, path_fill);
+                this.figure_attributes.Add(figure);
+            }
+            
         }
 
         public void SaveToSVG(List<ListFigureSvg> figure_attributesToExport)
@@ -181,11 +233,11 @@ namespace IO {
                 switch (figure_attributesToExport[i].name)
                 {
                     case "rectangle" :
-                       var rectangle =  SaveRectangle(figure_attributesToExport[i]);
+                       var rectangle =  SavePathRectangle(figure_attributesToExport[i]);
                        svgDoc.Children.Add(rectangle);
                         break;
                     case "line" :
-                        var line =  SaveLine(figure_attributesToExport[i]);
+                        var line =  SavePathLine(figure_attributesToExport[i]);
                         svgDoc.Children.Add(line);
                         break;
                     case "ellipse" :
@@ -193,39 +245,13 @@ namespace IO {
                         svgDoc.Children.Add(ellipse);
                         break;
                     case "path" :
-                        var path =  SavePath(figure_attributesToExport[i]);
+                        var path =  SavePathBizie(figure_attributesToExport[i]);
                         svgDoc.Children.Add(path);
                         break;
                 }
             }
         }
- 
-        private SvgRectangle SaveRectangle(ListFigureSvg rect)
-        {
-            var a = new SvgRectangle
-            {
-                X = rect.P1_rect.X,
-                Y = rect.P1_rect.Y,
-                Width = rect.P2_rect.X - rect.P1_rect.X,
-                Height = rect.P2_rect.Y - rect.P1_rect.Y,
-                Fill = new SvgColourServer(Color.FromArgb(rect.fill[0],rect.fill[1],rect.fill[2],rect.fill[3])) ,
-                Stroke = new SvgColourServer(Color.FromArgb(rect.stroke[0],rect.stroke[1],rect.stroke[2],rect.stroke[3]))
-            };
-            return a;
-        }
-        private SvgLine SaveLine(ListFigureSvg line)
-        {
-            var a = new SvgLine
-            {
-                StartX = line.P1_line.X,
-                StartY = line.P1_line.Y,
-                EndX = line.P2_line.X,
-                EndY = line.P2_line.Y,
-                Fill = new SvgColourServer(Color.FromArgb(line.fill[0],line.fill[1],line.fill[2],line.fill[3])) ,
-                Stroke = new SvgColourServer(Color.FromArgb(line.stroke[0],line.stroke[1],line.stroke[2],line.stroke[3]))
-            };
-            return a;
-        }
+        
         private SvgEllipse SaveEllipse(ListFigureSvg ellip)
         {
             var a = new SvgEllipse()
@@ -239,15 +265,45 @@ namespace IO {
             };
             return a;
         }
-        private SvgPath SavePath(ListFigureSvg bezie)
+        private SvgPath SavePathLine(ListFigureSvg Line)
         {
             SvgPathSegmentList Data = new SvgPathSegmentList();
-            Data.Add(new SvgMoveToSegment(false, new PointF(bezie.points_bezie[0].X,bezie.points_bezie[0].Y))); 
+            Data.Add(new SvgMoveToSegment(false, new PointF(Line.points[0].X,Line.points[0].Y))); 
+            Data.Add(new SvgLineSegment(false,new PointF(Line.points[1].X, Line.points[1].Y)));
+            Data.Add(new SvgClosePathSegment(true));
+            var bezie_path = new SvgPath()
+            {
+                PathData = Data,
+                Fill = new SvgColourServer(Color.FromArgb(Line.fill[0], Line.fill[1],Line.fill[2],Line.fill[3])) ,
+                Stroke = new SvgColourServer(Color.FromArgb(Line.stroke[0], Line.stroke[1],Line.stroke[2],Line.stroke[3]))
+            };
+            return bezie_path;
+        }
+        private SvgPath SavePathRectangle(ListFigureSvg rectangle)
+        {
+            SvgPathSegmentList Data = new SvgPathSegmentList();
+            Data.Add(new SvgMoveToSegment(false, new PointF(rectangle.points[0].X,rectangle.points[0].Y))); 
+            Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[1].X, rectangle.points[1].Y)));
+            Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[2].X, rectangle.points[2].Y)));
+            Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[3].X, rectangle.points[3].Y)));
+            Data.Add(new SvgClosePathSegment(true));
+            var bezie_path = new SvgPath()
+            {
+                PathData = Data,
+                Fill = new SvgColourServer(Color.FromArgb(rectangle.fill[0], rectangle.fill[1],rectangle.fill[2],rectangle.fill[3])) ,
+                Stroke = new SvgColourServer(Color.FromArgb(rectangle.stroke[0], rectangle.stroke[1],rectangle.stroke[2],rectangle.stroke[3]))
+            };
+            return bezie_path;
+        }
+        private SvgPath SavePathBizie(ListFigureSvg bezie)
+        {
+            SvgPathSegmentList Data = new SvgPathSegmentList();
+            Data.Add(new SvgMoveToSegment(false, new PointF(bezie.points[0].X,bezie.points[0].Y))); 
             Data.Add(new SvgCubicCurveSegment(
                 false,
-                new PointF(bezie.points_bezie[1].X, bezie.points_bezie[1].Y),
-                new PointF(bezie.points_bezie[2].X, bezie.points_bezie[2].Y),
-                new PointF(bezie.points_bezie[3].X,bezie.points_bezie[3].Y))
+                new PointF(bezie.points[1].X, bezie.points[1].Y),
+                new PointF(bezie.points[2].X, bezie.points[2].Y),
+                new PointF(bezie.points[3].X,bezie.points[3].Y))
             );
             Data.Add(new SvgClosePathSegment(true));
             var bezie_path = new SvgPath()

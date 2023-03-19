@@ -9,18 +9,13 @@ public class ListFigureSvg
     public float r2_ellipse;
     public List<byte> stroke;
     public List<byte> fill;
-    public Vector2 P1_rect;
-    public Vector2 P2_rect;
     public Vector2 P_ellipse;
-    public Vector2 P1_line;
-    public Vector2 P2_line;
-    public List<Vector2> points_bezie;
+    public List<Vector2> points;
     
     // for rectangle
-    public ListFigureSvg(Vector2 P1, Vector2 P2, string id, List<byte> color_stroke, List<byte> color_fill)
+    public ListFigureSvg(List<Vector2> point, string id, List<byte> color_stroke, List<byte> color_fill,bool flag)
     {
-        P1_rect = P1;
-        P2_rect = P2;
+        points = point;
         stroke = color_stroke;
         fill = color_fill;
         name = id; 
@@ -36,19 +31,18 @@ public class ListFigureSvg
         name = id; 
     }
     // for line
-    public ListFigureSvg(Vector2 P1, Vector2 P2, string id, List<byte> color_stroke, List<byte> color_fill, bool flag)
+    public ListFigureSvg(List<Vector2> point, string id, List<byte> color_stroke, List<byte> color_fill)
     {
-        P1_line = P1;
-        P2_line = P2;
+        points = point;
         stroke = color_stroke;
         fill = color_fill;
         name = id; 
     }
     
     // for bezie
-    public ListFigureSvg(List<Vector2> point, string id, List<byte> color_stroke, List<byte> color_fill)
+    public ListFigureSvg(List<Vector2> point, string id, List<byte> color_stroke, List<byte> color_fill,int a)
     {
-        points_bezie = point;
+        points = point;
         stroke = color_stroke;
         fill = color_fill;
         name = id; 
