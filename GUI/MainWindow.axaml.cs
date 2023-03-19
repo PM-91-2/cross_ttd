@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Numerics;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -9,7 +11,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Geometry;
-
+using Rectangle = Geometry.Rectangle;
 
 namespace CrossTTD;
 
@@ -22,16 +24,17 @@ enum EnumState
     Curve
 }
 
-
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
-    public List<Geometry.IFigure> figureArray = new List<Geometry.IFigure>();
+    public List<IFigure> figureArray = new List<IFigure>();
     // public ObservableCollection<Geometry.IFigure> Figures = new ObservableCollection<IFigure>();
 
     // public List<Geometry.IFigure> boundsArray = new List<Geometry.IFigure>();
     private PointerPoint moveSavePoint;
     private List<bool> moveFlagArray = new List<bool>();
     private List<bool> scaleFlagArray = new List<bool>();
+    private List<bool> rotateFlagArray = new List<bool>();
+
     private List<bool> IsActive = new List<bool>();
     private int _pointflag = -1;
 
@@ -39,7 +42,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private Vector2 secondPoint;
     private EnumState State = EnumState.Free;
 
+    private Point initialRotatingPoint = new Point();
+
     private bool IsPressed = false;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -49,46 +55,46 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonProfilesOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     private void ButtonSettingsOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     private void ButtonFilesOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     private void ButtonToolsOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     private void ButtonLineOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke)
     {
-        System.Globalization.CultureInfo customCulture =
-            (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+        CultureInfo customCulture =
+            (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
-        System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+        Thread.CurrentThread.CurrentCulture = customCulture;
 
         var pathFigure = new Path();
         var tmp = figure.PathData;
 
         pathFigure.Data = Avalonia.Media.Geometry.Parse(figure.PathData);
         SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-        mySolidColorBrush.Color = Avalonia.Media.Color.FromArgb(argb_fill[0], argb_fill[1], argb_fill[2], argb_fill[3]);
+        mySolidColorBrush.Color = Color.FromArgb(argb_fill[0], argb_fill[1], argb_fill[2], argb_fill[3]);
         pathFigure.Fill = mySolidColorBrush;
         SolidColorBrush mySolidColorBrush2 = new SolidColorBrush();
         mySolidColorBrush2.Color =
-            Avalonia.Media.Color.FromArgb(arbg_stroke[0], arbg_stroke[1], arbg_stroke[2], arbg_stroke[3]);
+            Color.FromArgb(arbg_stroke[0], arbg_stroke[1], arbg_stroke[2], arbg_stroke[3]);
         pathFigure.Stroke = mySolidColorBrush2;
         pathFigure.StrokeThickness = 4;
 
@@ -96,26 +102,26 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var tmpbounds = figure.BoundsData;
         pathBounds.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
         SolidColorBrush mySolidColorBrushBounds = new SolidColorBrush();
-        mySolidColorBrushBounds.Color = Avalonia.Media.Color.FromArgb(255, 0, 0, 0);
+        mySolidColorBrushBounds.Color = Color.FromArgb(255, 0, 0, 0);
         pathBounds.Stroke = mySolidColorBrushBounds;
         pathBounds.StrokeThickness = 2;
 
-        return new List<Path>() {pathFigure, pathBounds};
+        return new List<Path>() { pathFigure, pathBounds };
     }
 
 
     private Path DrawBounds(IFigure figure)
     {
-        System.Globalization.CultureInfo customCulture =
-            (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+        CultureInfo customCulture =
+            (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
-        System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+        Thread.CurrentThread.CurrentCulture = customCulture;
 
         var pathFigure = new Path();
         var tmp = figure.BoundsData;
         pathFigure.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
         SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-        mySolidColorBrush.Color = Avalonia.Media.Color.FromArgb(255, 0, 0, 0);
+        mySolidColorBrush.Color = Color.FromArgb(255, 0, 0, 0);
         pathFigure.Stroke = mySolidColorBrush;
         pathFigure.StrokeThickness = 2;
 
@@ -126,8 +132,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         for (int i = 0; i < figureArray.Count; i++)
         {
-            List<Path> pathFigure = DrawFigure(figureArray[i], new List<byte>() {255, 255, 255, 0},
-                new List<byte>() {255, 90, 255, 0}); //todo: fix tmp args
+            List<Path> pathFigure = DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
+                new List<byte>() { 255, 90, 255, 0 }); //todo: fix tmp args
             // Path pathFigureBounds = DrawBounds(figureArray[i]);
             Grid grid = new Grid();
             grid.Children.Add(pathFigure[0]);
@@ -138,21 +144,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
     {
-        
         // CreateRectangle(new Vector2(1f, 1f), new Vector2(300f, 400f), new List<byte>() {255, 255, 255, 0},
         //     new List<byte>() {255, 90, 255, 0});
         State = EnumState.Square;
-
     }
 
     private void ButtonCircleOnClick(object? sender, RoutedEventArgs e)
     {
         Ellipse ellipse = new Ellipse();
         SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-        mySolidColorBrush.Color = Avalonia.Media.Color.FromArgb(255, 255, 255, 0);
+        mySolidColorBrush.Color = Color.FromArgb(255, 255, 255, 0);
         ellipse.Fill = mySolidColorBrush;
         ellipse.StrokeThickness = 2;
-        ellipse.Stroke = Avalonia.Media.Brushes.Black;
+        ellipse.Stroke = Brushes.Black;
 
         ellipse.Width = 100;
         ellipse.Height = 50;
@@ -162,7 +166,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonCurvedOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     protected void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -178,12 +182,21 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             for (int i = 0; i < figureArray.Count; i++)
             {
                 _pointflag = figureArray[i].IsPointNearVerticle(currentPoint);
-                if (_pointflag != -1)
+
+                if (e.KeyModifiers == KeyModifiers.Control && _pointflag != -1)
+                {
+                    rotateFlagArray[i] = true;
+                    initialRotatingPoint = e.GetCurrentPoint(ThisCanv).Position;
+                    break;
+                }
+
+                else if (_pointflag != -1)
                 {
                     moveSavePoint = e.GetCurrentPoint(ThisCanv);
                     scaleFlagArray[i] = true;
                     break;
                 }
+
                 else if (figureArray[i].IsPointInFigure(currentPoint))
                 {
                     moveSavePoint = e.GetCurrentPoint(ThisCanv);
@@ -205,15 +218,17 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             IsPressed = false;
             if (State == EnumState.Square)
             {
-                CreateRectangle(firstPoint, secondPoint, new List<byte>() {255, 255, 255, 0},
-                 new List<byte>() {255, 90, 255, 0});
+                CreateRectangle(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
+                    new List<byte>() { 255, 90, 255, 0 });
                 State = EnumState.Free;
             }
         }
+
         for (int i = 0; i < figureArray.Count; i++)
         {
             if (moveFlagArray[i]) moveFlagArray[i] = false;
             if (scaleFlagArray[i]) scaleFlagArray[i] = false;
+            if (rotateFlagArray[i]) rotateFlagArray[i] = false;
             figureArray[i].SortPoints();
         }
     }
@@ -234,8 +249,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 figureArray[i].Move(p1, p2);
                 // figureArray[i + 1].Move(p1, p2);
                 moveSavePoint = e.GetCurrentPoint(ThisCanv);
-                DrawFigure(figureArray[i], new List<byte>() {255, 255, 255, 0},
-                    new List<byte>() {255, 90, 255, 0}); // todo: fix tmp args
+                DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
+                    new List<byte>() { 255, 90, 255, 0 }); // todo: fix tmp args
                 // DrawBounds(boundsArray[i]);
             }
 
@@ -247,21 +262,35 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 figureArray[i].Scale(point, _pointflag);
                 // boundsArray[i].Scale(point);
                 // moveSavePoint = e.GetCurrentPoint(ThisCanv);
-                DrawFigure(figureArray[i], new List<byte>() {255, 255, 255, 0},
-                    new List<byte>() {255, 90, 255, 0}); // todo: fix tmp args
+                DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
+                    new List<byte>() { 255, 90, 255, 0 }); // todo: fix tmp args
                 // DrawBounds(boundsArray[i]);
+            }
+
+            if (rotateFlagArray[i])
+            {
+                var somePoint = e.GetPosition(ThisCanv);
+                var rotateAngle = 1;
+
+                if (somePoint.Y - initialRotatingPoint.Y < 0) rotateAngle = -1;
+
+                figureArray[i].Rotate(rotateAngle);
+                figureArray[i].SortPoints();
+                DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
+                    new List<byte>() { 255, 90, 255, 0 });
             }
         }
     }
 
     public void CreateRectangle(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> arbg_stroke)
     {
-        Geometry.IFigure rectangle = new Geometry.Rectangle(point1, point2);
+        IFigure rectangle = new Rectangle(point1, point2);
         //rectangle.Rotate(300.0f);
         // rectangle_bounds.Rotate(45.0f);
         DrawFigure(rectangle, argb_fill, arbg_stroke);
         figureArray.Add(rectangle);
         moveFlagArray.Add(false);
         scaleFlagArray.Add(false);
+        rotateFlagArray.Add(false);
     }
 }
