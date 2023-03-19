@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
 using Svg;
 using Svg.Pathing;
 
@@ -172,9 +173,75 @@ namespace IO {
             this.figure_attributes.Add(figure);
         }
 
-        public void SaveToSVG()
+        public void SaveToSVG(List<ListFigureSvg> figure_attributesToExport)
         {
-
+            var svgDoc = new SvgDocument();
+            for (int i = 0; i < figure_attributesToExport.Count; i++)
+            {
+                switch (figure_attributesToExport[i].name)
+                {
+                    case "rectangle" :
+                       var rectangle =  SaveRectangle(figure_attributesToExport[i]);
+                       svgDoc.Children.Add(rectangle);
+                        break;
+                    case "line" :
+                        var line =  SaveLine(figure_attributesToExport[i]);
+                        svgDoc.Children.Add(line);
+                        break;
+                    case "ellipse" :
+                        var ellipse =  SaveEllipse(figure_attributesToExport[i]);
+                        svgDoc.Children.Add(ellipse);
+                        break;
+                    case "path" :
+                        var path =  SavePath(figure_attributesToExport[i]);
+                        svgDoc.Children.Add(path);
+                        break;
+                }
+            }
+        }
+ 
+        private SvgRectangle SaveRectangle(ListFigureSvg rect)
+        {
+            var a = new SvgRectangle
+            {
+                X = rect.P1_rect.X,
+                Y = rect.P1_rect.Y,
+                Width = rect.P2_rect.X - rect.P1_rect.X,
+                Height = rect.P2_rect.Y - rect.P1_rect.Y,
+                Fill = new SvgColourServer(Color.FromArgb(rect.fill[0],rect.fill[1],rect.fill[2],rect.fill[3])) ,
+                Stroke = new SvgColourServer(Color.FromArgb(rect.stroke[0],rect.stroke[1],rect.stroke[2],rect.stroke[3]))
+            };
+            return a;
+        }
+        private SvgLine SaveLine(ListFigureSvg line)
+        {
+            var a = new SvgLine
+            {
+                StartX = line.P1_line.X,
+                StartY = line.P1_line.Y,
+                EndX = line.P2_line.X,
+                EndY = line.P2_line.Y,
+                Fill = new SvgColourServer(Color.FromArgb(line.fill[0],line.fill[1],line.fill[2],line.fill[3])) ,
+                Stroke = new SvgColourServer(Color.FromArgb(line.stroke[0],line.stroke[1],line.stroke[2],line.stroke[3]))
+            };
+            return a;
+        }
+        private SvgEllipse SaveEllipse(ListFigureSvg ellip)
+        {
+            var a = new SvgEllipse()
+            {
+                CenterX = ellip.P_ellipse.X,
+                CenterY = ellip.P_ellipse.Y,
+                RadiusX = ellip.r1_ellipse,
+                RadiusY = ellip.r2_ellipse,
+                Fill = new SvgColourServer(Color.FromArgb(ellip.fill[0],ellip.fill[1],ellip.fill[2],ellip.fill[3])) ,
+                Stroke = new SvgColourServer(Color.FromArgb(ellip.stroke[0],ellip.stroke[1],ellip.stroke[2],ellip.stroke[3]))
+            };
+            return a;
+        }
+        private SvgPath SavePath(ListFigureSvg bezie)
+        {
+            return new SvgPath();
         }
     }
 }
