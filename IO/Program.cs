@@ -241,7 +241,22 @@ namespace IO {
         }
         private SvgPath SavePath(ListFigureSvg bezie)
         {
-            return new SvgPath();
+            SvgPathSegmentList Data = new SvgPathSegmentList();
+            Data.Add(new SvgMoveToSegment(false, new PointF(bezie.points_bezie[0].X,bezie.points_bezie[0].Y))); 
+            Data.Add(new SvgCubicCurveSegment(
+                false,
+                new PointF(bezie.points_bezie[1].X, bezie.points_bezie[1].Y),
+                new PointF(bezie.points_bezie[2].X, bezie.points_bezie[2].Y),
+                new PointF(bezie.points_bezie[3].X,bezie.points_bezie[3].Y))
+            );
+            Data.Add(new SvgClosePathSegment(true));
+            var bezie_path = new SvgPath()
+            {
+                PathData = Data,
+                Fill = new SvgColourServer(Color.FromArgb(bezie.fill[0], bezie.fill[1],bezie.fill[2],bezie.fill[3])) ,
+                Stroke = new SvgColourServer(Color.FromArgb(bezie.stroke[0], bezie.stroke[1],bezie.stroke[2],bezie.stroke[3]))
+            };
+            return bezie_path;
         }
     }
 }
