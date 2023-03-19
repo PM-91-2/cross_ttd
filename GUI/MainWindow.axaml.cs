@@ -109,25 +109,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         return new List<Path>() { pathFigure, pathBounds };
     }
 
-
-    private Path DrawBounds(IFigure figure)
-    {
-        CultureInfo customCulture =
-            (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
-        customCulture.NumberFormat.NumberDecimalSeparator = ".";
-        Thread.CurrentThread.CurrentCulture = customCulture;
-
-        var pathFigure = new Path();
-        var tmp = figure.BoundsData;
-        pathFigure.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
-        SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-        mySolidColorBrush.Color = Color.FromArgb(255, 0, 0, 0);
-        pathFigure.Stroke = mySolidColorBrush;
-        pathFigure.StrokeThickness = 2;
-
-        return pathFigure;
-    }
-
     private void DrawAll()
     {
         for (int i = 0; i < figureArray.Count; i++)
@@ -229,7 +210,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             if (moveFlagArray[i]) moveFlagArray[i] = false;
             if (scaleFlagArray[i]) scaleFlagArray[i] = false;
             if (rotateFlagArray[i]) rotateFlagArray[i] = false;
-            figureArray[i].SortPoints();
         }
     }
 
@@ -245,26 +225,21 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             {
                 Vector2 p1 = new Vector2((float)moveSavePoint.Position.X, (float)moveSavePoint.Position.Y);
                 Vector2 p2 = new Vector2((float)e.GetCurrentPoint(ThisCanv).Position.X,
-                    (float)e.GetCurrentPoint(ThisCanv).Position.Y);
+                (float)e.GetCurrentPoint(ThisCanv).Position.Y);
                 figureArray[i].Move(p1, p2);
-                // figureArray[i + 1].Move(p1, p2);
                 moveSavePoint = e.GetCurrentPoint(ThisCanv);
                 DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
-                    new List<byte>() { 255, 90, 255, 0 }); // todo: fix tmp args
-                // DrawBounds(boundsArray[i]);
+                new List<byte>() { 255, 90, 255, 0 }); // todo: fix tmp args
             }
 
             // Масштабирование
             if (scaleFlagArray[i])
             {
                 Vector2 point = new Vector2((float)e.GetCurrentPoint(ThisCanv).Position.X,
-                    (float)e.GetCurrentPoint(ThisCanv).Position.Y);
+                (float)e.GetCurrentPoint(ThisCanv).Position.Y);
                 figureArray[i].Scale(point, _pointflag);
-                // boundsArray[i].Scale(point);
-                // moveSavePoint = e.GetCurrentPoint(ThisCanv);
                 DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
-                    new List<byte>() { 255, 90, 255, 0 }); // todo: fix tmp args
-                // DrawBounds(boundsArray[i]);
+                new List<byte>() { 255, 90, 255, 0 }); // todo: fix tmp args
             }
 
             if (rotateFlagArray[i])
@@ -275,9 +250,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 if (somePoint.Y - initialRotatingPoint.Y < 0) rotateAngle = -1;
 
                 figureArray[i].Rotate(rotateAngle);
-                figureArray[i].SortPoints();
                 DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
-                    new List<byte>() { 255, 90, 255, 0 });
+                new List<byte>() { 255, 90, 255, 0 });
             }
         }
     }
@@ -286,7 +260,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         IFigure rectangle = new Rectangle(point1, point2);
         //rectangle.Rotate(300.0f);
-        // rectangle_bounds.Rotate(45.0f);
         DrawFigure(rectangle, argb_fill, arbg_stroke);
         figureArray.Add(rectangle);
         moveFlagArray.Add(false);
