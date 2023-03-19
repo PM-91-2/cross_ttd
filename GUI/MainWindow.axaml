@@ -6,7 +6,7 @@
         x:Class="CrossTTD.MainWindow"
         x:Name="CrossTtd"
         Title="GUI">
-    <Grid ShowGridLines="True" Margin="3" RowDefinitions="30,*" ColumnDefinitions="*, *, *" ZIndex="0">
+    <Grid Margin="3" RowDefinitions="30,*" ColumnDefinitions="*, *, *" ZIndex="0">
         <DockPanel ZIndex="0"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
@@ -28,7 +28,7 @@
 			        <Image Source="icons/square.png"></Image>
 		        </StackPanel>
 	        </Button>
-	        <Button Click="ButtonCircleOnClick">
+	        <Button Click="ButtonEllipseOnClick">
 		        <StackPanel>
 			        <Image Source="icons/circle.png"></Image>
 		        </StackPanel>
@@ -48,7 +48,8 @@
 	            PointerReleased="OnCanvasPointerReleased"
 	            Background="White"
 	            PointerMoved="OnCanvasPointerMoved"
-				>
+	            KeyDown="KeyBindings"
+	    >
 	    </Canvas>
 	    <TextBlock 
 		    Grid.Row="1" 

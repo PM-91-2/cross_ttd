@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Threading;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
@@ -20,8 +21,9 @@ enum EnumState
     Square,
     Line,
     Ellipse,
+    Curve,
     Free,
-    Curve
+    Select
 }
 
 public partial class MainWindow : Window, INotifyPropertyChanged
@@ -39,8 +41,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private List<bool> IsActive = new List<bool>();
     private int _pointflag = -1;
 
-    private Vector2 firstPoint;
-    private Vector2 secondPoint;
+    private Vector2 firstPoint = new Vector2(0, 0);
+    private Vector2 secondPoint = new Vector2(0, 0);
     private EnumState State = EnumState.Free;
 
     private Point initialRotatingPoint = new Point();
@@ -50,8 +52,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public MainWindow()
     {
         InitializeComponent();
-        firstPoint = new Vector2(0, 0);
-        secondPoint = new Vector2(0, 0);
     }
 
     private void ButtonProfilesOnClick(object? sender, RoutedEventArgs e)
@@ -87,7 +87,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         Thread.CurrentThread.CurrentCulture = customCulture;
 
         var pathFigure = new Path();
-        var tmp = figure.PathData;
 
         pathFigure.Data = Avalonia.Media.Geometry.Parse(figure.PathData);
         SolidColorBrush mySolidColorBrush = new SolidColorBrush();
@@ -102,11 +101,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var pathBounds = new Path();
         if (needBoundingBox)
         {
-            var tmpbounds = figure.BoundsData;
             pathBounds.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
             SolidColorBrush mySolidColorBrushBounds = new SolidColorBrush();
             mySolidColorBrushBounds.Color = Color.FromArgb(255, 0, 0, 0);
             pathBounds.Stroke = mySolidColorBrushBounds;
+            pathBounds.StrokeDashArray = new AvaloniaList<double>(4, 2, 4);
             pathBounds.StrokeThickness = 2;
         }
 
@@ -129,29 +128,17 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
     {
-        // CreateRectangle(new Vector2(1f, 1f), new Vector2(300f, 400f), new List<byte>() {255, 255, 255, 0},
-        //     new List<byte>() {255, 90, 255, 0});
         State = EnumState.Square;
     }
 
-    private void ButtonCircleOnClick(object? sender, RoutedEventArgs e)
+    private void ButtonEllipseOnClick(object? sender, RoutedEventArgs e)
     {
-        Ellipse ellipse = new Ellipse();
-        SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-        mySolidColorBrush.Color = Color.FromArgb(255, 255, 255, 0);
-        ellipse.Fill = mySolidColorBrush;
-        ellipse.StrokeThickness = 2;
-        ellipse.Stroke = Brushes.Black;
-
-        ellipse.Width = 100;
-        ellipse.Height = 50;
-
-        ThisCanv.Children.Add(ellipse);
+        State = EnumState.Ellipse;
     }
 
     private void ButtonCurvedOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        State = EnumState.Curve;
     }
 
     protected void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -162,7 +149,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             (float)e.GetCurrentPoint(ThisCanv).Position.Y);
 
         firstPoint = currentPoint;
-        if (State == EnumState.Free)
+        if (State is EnumState.Free or EnumState.Select)
         {
             for (int i = 0; i < figureArray.Count; i++)
             {
@@ -171,6 +158,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 if (tmp_selectedFigure != selectedFlagArray[i])
                 {
                     UpdateCanvas();
+                    State = EnumState.Select;
                 }
             }
             
@@ -204,17 +192,31 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     protected void OnCanvasPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (IsPressed == true)
+        if (IsPressed is true)
         {
             secondPoint.X = (float)e.GetCurrentPoint(ThisCanv).Position.X;
             secondPoint.Y = (float)e.GetCurrentPoint(ThisCanv).Position.Y;
 
             IsPressed = false;
-            if (State == EnumState.Square)
+            switch (State)
             {
-                CreateRectangle(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
-                    new List<byte>() { 255, 90, 255, 0 }, true);
-                State = EnumState.Free;
+                case EnumState.Square:
+                    CreateRectangle(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
+                        new List<byte>() { 255, 90, 255, 0 }, true);
+                    State = EnumState.Free;
+                    break;
+                case EnumState.Line:
+                    break;
+                case EnumState.Ellipse:
+                    break;
+                case EnumState.Curve:
+                    break;
+                case EnumState.Free:
+                    break;
+                case EnumState.Select:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -299,5 +301,42 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         grid.Children.Add(pathFigure[0]);
         grid.Children.Add(pathFigure[1]);
         ThisCanv.Children.Add(grid);
+    }
+
+    private void DeleteFigure(int index)
+    {
+        figureArray.RemoveAt(index);
+        moveFlagArray.RemoveAt(index);
+        scaleFlagArray.RemoveAt(index);
+        rotateFlagArray.RemoveAt(index);
+        selectedFlagArray.RemoveAt(index);
+    }
+
+    private new void KeyBindings(object? sender, KeyEventArgs e)
+    {
+        switch (State)
+        {
+            case EnumState.Select:
+            {
+                var indexSelectedFigure = -1;
+                for (int i = 0; i < figureArray.Count; i++)
+                {
+                    if (selectedFlagArray[i] is true)
+                    {
+                        indexSelectedFigure = i;
+                    }
+                }
+                if (e.Key is Key.Delete && indexSelectedFigure != -1)
+                {
+                    DeleteFigure(indexSelectedFigure);
+                    UpdateCanvas();
+                }
+                break;
+            }
+            case EnumState.Free:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }
