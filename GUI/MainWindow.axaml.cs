@@ -34,6 +34,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private List<bool> moveFlagArray = new List<bool>();
     private List<bool> scaleFlagArray = new List<bool>();
     private List<bool> rotateFlagArray = new List<bool>();
+    private List<bool> selectedFlagArray = new List<bool>();
 
     private List<bool> IsActive = new List<bool>();
     private int _pointflag = -1;
@@ -78,7 +79,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         throw new NotImplementedException();
     }
 
-    private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke)
+    private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
     {
         CultureInfo customCulture =
             (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
@@ -99,12 +100,15 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         pathFigure.StrokeThickness = 4;
 
         var pathBounds = new Path();
-        var tmpbounds = figure.BoundsData;
-        pathBounds.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
-        SolidColorBrush mySolidColorBrushBounds = new SolidColorBrush();
-        mySolidColorBrushBounds.Color = Color.FromArgb(255, 0, 0, 0);
-        pathBounds.Stroke = mySolidColorBrushBounds;
-        pathBounds.StrokeThickness = 2;
+        if (needBoundingBox)
+        {
+            var tmpbounds = figure.BoundsData;
+            pathBounds.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
+            SolidColorBrush mySolidColorBrushBounds = new SolidColorBrush();
+            mySolidColorBrushBounds.Color = Color.FromArgb(255, 0, 0, 0);
+            pathBounds.Stroke = mySolidColorBrushBounds;
+            pathBounds.StrokeThickness = 2;
+        }
 
         return new List<Path>() { pathFigure, pathBounds };
     }
@@ -114,7 +118,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         for (int i = 0; i < figureArray.Count; i++)
         {
             List<Path> pathFigure = DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
-                new List<byte>() { 255, 90, 255, 0 }); //todo: fix tmp args
+                new List<byte>() { 255, 90, 255, 0 }, selectedFlagArray[i]); //todo: fix tmp args
             // Path pathFigureBounds = DrawBounds(figureArray[i]);
             Grid grid = new Grid();
             grid.Children.Add(pathFigure[0]);
@@ -162,6 +166,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             for (int i = 0; i < figureArray.Count; i++)
             {
+                var tmp_selectedFigure = selectedFlagArray[i];
+                selectedFlagArray[i] = figureArray[i].IsPointInFigure(currentPoint);
+                if (tmp_selectedFigure != selectedFlagArray[i])
+                {
+                    UpdateCanvas();
+                }
+            }
+            
+            for (int i = 0; i < figureArray.Count; i++)
+            {
                 _pointflag = figureArray[i].IsPointNearVerticle(currentPoint);
 
                 if (e.KeyModifiers == KeyModifiers.Control && _pointflag != -1)
@@ -184,7 +198,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     moveFlagArray[i] = true;
                     break;
                 }
-                // moveSavePoint = e.GetCurrentPoint(ThisCanv);
             }
         }
     }
@@ -200,7 +213,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             if (State == EnumState.Square)
             {
                 CreateRectangle(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
-                    new List<byte>() { 255, 90, 255, 0 });
+                    new List<byte>() { 255, 90, 255, 0 }, true);
                 State = EnumState.Free;
             }
         }
@@ -215,8 +228,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     protected void OnCanvasPointerMoved(object? sender, PointerEventArgs e)
     {
-        ThisCanv.Children.Clear();
-        DrawAll();
+        UpdateCanvas();
 
         for (int i = 0; i < figureArray.Count; i++)
         {
@@ -229,7 +241,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 figureArray[i].Move(p1, p2);
                 moveSavePoint = e.GetCurrentPoint(ThisCanv);
                 DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
-                new List<byte>() { 255, 90, 255, 0 }); // todo: fix tmp args
+                new List<byte>() { 255, 90, 255, 0 }, selectedFlagArray[i]); // todo: fix tmp args
             }
 
             // Масштабирование
@@ -239,7 +251,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 (float)e.GetCurrentPoint(ThisCanv).Position.Y);
                 figureArray[i].Scale(point, _pointflag);
                 DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
-                new List<byte>() { 255, 90, 255, 0 }); // todo: fix tmp args
+                new List<byte>() { 255, 90, 255, 0 }, selectedFlagArray[i]); // todo: fix tmp args
             }
 
             if (rotateFlagArray[i])
@@ -247,23 +259,45 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 var somePoint = e.GetPosition(ThisCanv);
                 var rotateAngle = 1;
 
-                if (somePoint.Y - initialRotatingPoint.Y < 0) rotateAngle = -1;
+                if (somePoint.Y - initialRotatingPoint.Y < 0)
+                {
+                    rotateAngle = -1;
+                }
 
                 figureArray[i].Rotate(rotateAngle);
                 DrawFigure(figureArray[i], new List<byte>() { 255, 255, 255, 0 },
-                new List<byte>() { 255, 90, 255, 0 });
+                new List<byte>() { 255, 90, 255, 0 }, selectedFlagArray[i]);
+                initialRotatingPoint = somePoint;
             }
         }
     }
 
-    public void CreateRectangle(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> arbg_stroke)
+    public void CreateRectangle(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
     {
         IFigure rectangle = new Rectangle(point1, point2);
         //rectangle.Rotate(300.0f);
-        DrawFigure(rectangle, argb_fill, arbg_stroke);
+        DrawFigure(rectangle, argb_fill, arbg_stroke, needBoundingBox);
         figureArray.Add(rectangle);
         moveFlagArray.Add(false);
         scaleFlagArray.Add(false);
         rotateFlagArray.Add(false);
+        selectedFlagArray.Add(false);
+    }
+    
+    private void UpdateCanvas()
+    {
+        ThisCanv.Children.Clear();
+        DrawAll();
+    }
+
+    private void UpdateFigure(int index)
+    {
+        ThisCanv.Children.RemoveAt(index);
+        var pathFigure = DrawFigure(figureArray[index], new List<byte>() { 255, 255, 255, 0 },
+            new List<byte>() { 255, 90, 255, 0 }, selectedFlagArray[index]);
+        Grid grid = new Grid();
+        grid.Children.Add(pathFigure[0]);
+        grid.Children.Add(pathFigure[1]);
+        ThisCanv.Children.Add(grid);
     }
 }
