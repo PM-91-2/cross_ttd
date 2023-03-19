@@ -6,6 +6,8 @@ using System.Numerics;
 namespace Geometry
 {
     public class Rectangle : IFigure {
+        public string Name => "Rectangle";
+        
         private List<Vector2> _points;
         private List<Vector2> _bounds;
         private float _angle = 0f;

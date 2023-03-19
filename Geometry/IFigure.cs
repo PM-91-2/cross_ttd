@@ -2,6 +2,7 @@
 
 namespace Geometry {
     public interface IFigure {
+        string Name { get; }
         string InputOutputData { get; }
 
         string PathData { get; }

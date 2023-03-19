@@ -12,6 +12,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Geometry;
 using Rectangle = Geometry.Rectangle;
+using Vector = System.Numerics.Vector;
 
 namespace CrossTTD;
 
@@ -90,7 +91,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         pathFigure.Data = Avalonia.Media.Geometry.Parse(figure.PathData);
         SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-        mySolidColorBrush.Color = Color.FromArgb(argb_fill[0], argb_fill[1], argb_fill[2], argb_fill[3]);
+
+        if (figure.Name != EnumState.Curve.ToString() && figure.Name != EnumState.Line.ToString()) {
+            mySolidColorBrush.Color = Color.FromArgb(argb_fill[0], argb_fill[1], argb_fill[2], argb_fill[3]);
+        }
+
         pathFigure.Fill = mySolidColorBrush;
         SolidColorBrush mySolidColorBrush2 = new SolidColorBrush();
         mySolidColorBrush2.Color =
@@ -145,9 +150,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         ThisCanv.Children.Add(ellipse);
     }
 
-    private void ButtonCurvedOnClick(object? sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
+    private void ButtonCurvedOnClick(object? sender, RoutedEventArgs e) {
+        State = EnumState.Curve;
     }
 
     protected void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -200,6 +204,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             if (State == EnumState.Square)
             {
                 CreateRectangle(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
+                    new List<byte>() { 255, 90, 255, 0 });
+                State = EnumState.Free;
+            }
+
+            if (State == EnumState.Curve) {
+                CreateBezierCurve(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
                     new List<byte>() { 255, 90, 255, 0 });
                 State = EnumState.Free;
             }
@@ -262,6 +272,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         //rectangle.Rotate(300.0f);
         DrawFigure(rectangle, argb_fill, arbg_stroke);
         figureArray.Add(rectangle);
+        moveFlagArray.Add(false);
+        scaleFlagArray.Add(false);
+        rotateFlagArray.Add(false);
+    }
+
+    public void CreateBezierCurve(Vector2 firstPoint, Vector2 secondPoint, List<byte> argbFill,List<byte> argbStroke) {
+        IFigure bezierCurve = new BezierCurve(firstPoint, secondPoint, firstPoint + new Vector2(100.0f,100.0f), secondPoint + new Vector2(100.0f,100.0f));
+
+        DrawFigure(bezierCurve,argbFill,argbStroke);
+        figureArray.Add(bezierCurve);
         moveFlagArray.Add(false);
         scaleFlagArray.Add(false);
         rotateFlagArray.Add(false);
