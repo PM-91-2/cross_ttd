@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.Numerics;
 using System.Threading;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
@@ -22,11 +22,12 @@ enum EnumState
     Square,
     Line,
     Ellipse,
+    Curve,
     Free,
     Select
 }
 
-public partial class MainWindow : Window, INotifyPropertyChanged
+public partial class MainWindow : Window
 {
     public List<IFigure> figureArray = new List<IFigure>();
     // public ObservableCollection<Geometry.IFigure> Figures = new ObservableCollection<IFigure>();
@@ -38,7 +39,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private List<bool> rotateFlagArray = new List<bool>();
     private List<bool> selectedFlagArray = new List<bool>();
 
-    private List<bool> IsActive = new List<bool>();
     private int _pointflag = -1;
 
     private Vector2 firstPoint = new Vector2(0, 0);
@@ -132,6 +132,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             ThisCanv.Children.Add(grid);
         }
     }
+    
+    private void ButtonLineOnClick(object? sender, RoutedEventArgs e)
+    {
+        State = EnumState.Line;
+    }
 
     private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
     {
@@ -205,7 +210,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             secondPoint.Y = (float)e.GetCurrentPoint(ThisCanv).Position.Y;
 
             IsPressed = false;
-            if (State == EnumState.Square)
+            switch (State)
             {
                 case EnumState.Square:
                     CreateRectangleFromTool(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
@@ -349,7 +354,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 var indexSelectedFigure = -1;
                 for (int i = 0; i < figureArray.Count; i++)
                 {
-                    if (selectedFlagArray[i] is true)
+                    if (selectedFlagArray[i])
                     {
                         indexSelectedFigure = i;
                     }
