@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Avalonia;
@@ -37,6 +38,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private List<bool> scaleFlagArray = new List<bool>();
     private List<bool> rotateFlagArray = new List<bool>();
     private List<bool> selectedFlagArray = new List<bool>();
+    private List<bool> BezierFlagsArray = new List<bool>(){false, false, false,false};
+    private List<Vector2> BezierPoints = new List<Vector2>();
 
     private int _pointflag = -1;
 
@@ -80,10 +83,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonToolsOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        IO.Svg svgObj = new IO.Svg();
+        List<ListFigureSvg> ForExport = new List<ListFigureSvg>();
+        foreach ( IFigure figure in figureArray) {
+            ForExport.Add(figure.ExportData);
+        }
+        svgObj.SaveToSVG(ForExport);
+        // throw new NotImplementedException();
     }
-
-  
 
     private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
     {
@@ -157,6 +164,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             (float)e.GetCurrentPoint(ThisCanv).Position.Y);
 
         firstPoint = currentPoint;
+        if (State == EnumState.Curve) {
+            if (!BezierFlagsArray[0]) {
+                BezierFlagsArray[0] = true;
+                BezierPoints.Add(firstPoint);
+            } else if (BezierFlagsArray[1]) {
+                BezierFlagsArray[2] = true;
+                BezierPoints.Add(firstPoint);
+            }
+        }
+
         if (State == EnumState.Free)
         {
             for (int i = 0; i < figureArray.Count; i++)
@@ -215,7 +232,29 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 case EnumState.Ellipse:
                     CreateEllipse(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
                         new List<byte>() { 255, 90, 255, 0 }, true);
+                         State = EnumState.Free;
+                    break;
+                case EnumState.Curve:
+                    if (BezierFlagsArray[0] && !BezierFlagsArray[1]) {
+                        BezierFlagsArray[1] = true;
+                        BezierPoints.Add(secondPoint);
+                    } else if (BezierFlagsArray[2] && !BezierFlagsArray[3]) {
+                        BezierFlagsArray[3] = true;
+                        BezierPoints.Add(secondPoint);
+                    }
+                    //todo: Насрать жестко (Done.)
+                    foreach (bool point in BezierFlagsArray) {
+                        if (!point) {
+                            return;
+                        }
+                    }
+                    CreateBezierCurveFromTool(BezierPoints[0], BezierPoints[1], BezierPoints[2], BezierPoints[3], new List<byte>() { 0, 0, 0, 0 },
+                        new List<byte>() { 255, 90, 255, 0 }, true);
                     State = EnumState.Free;
+                    for (int i = 0; i < BezierFlagsArray.Count(); i++) {
+                        BezierFlagsArray[i] = false;
+                    }
+                    BezierPoints.Clear();
                     break;
             }
             
@@ -296,6 +335,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public void CreateEllipse(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke, Boolean needBoundingBox)
     {
         IFigure rectangle = new Ellipse(point1, point2, argb_fill, argb_stroke);
+        DrawFigure(rectangle, argb_fill, argb_stroke, needBoundingBox);
+        figureArray.Add(rectangle);
+        moveFlagArray.Add(false);
+        scaleFlagArray.Add(false);
+        rotateFlagArray.Add(false);
+        selectedFlagArray.Add(false);
+    }
+    
+    public void CreateBezierCurveFromTool(Vector2 point1, Vector2 point2, Vector2 point3, Vector2 point4, List<byte> argb_fill, List<byte> argb_stroke, Boolean needBoundingBox) {
+        IFigure rectangle = new BezierCurve(point1, point2, point3, point4, argb_fill, argb_stroke);
         DrawFigure(rectangle, argb_fill, argb_stroke, needBoundingBox);
         figureArray.Add(rectangle);
         moveFlagArray.Add(false);
