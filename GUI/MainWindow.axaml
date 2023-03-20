@@ -6,34 +6,36 @@
         x:Class="CrossTTD.MainWindow"
         x:Name="CrossTtd"
         Title="GUI">
-    <Grid ShowGridLines="True" Margin="3" RowDefinitions="30,*" ColumnDefinitions="*, *, *" ZIndex="0">
-        <DockPanel ZIndex="0"
+    <Grid ShowGridLines="False" Margin="3" RowDefinitions="30,*" ColumnDefinitions="*, *, *" ZIndex="0">
+        <DockPanel ZIndex="1"
                    HorizontalAlignment="Left"
-                   VerticalAlignment="Top"
-                   Background="Gray">
-            <Button Click="ButtonFilesOnClick">Files</Button>
-            <Button Click="ButtonToolsOnClick">Tools</Button>
-            <Button Click="ButtonSettingsOnClick">Settings</Button>
-            <Button Click="ButtonProfilesOnClick">Profiles</Button>
+                   VerticalAlignment="Top">
+	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonFilesOnClick">Save</Button>
+	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonToolsOnClick">Load</Button>
         </DockPanel>
-        <TextBlock Grid.Row="0" Grid.Column="1" Background="" Text="TTD" HorizontalAlignment="Center" VerticalAlignment="Top"></TextBlock>
-        <WrapPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" ZIndex="1" Orientation="Vertical" ItemWidth="35" VerticalAlignment="Center">
-            <Button Click="ButtonLineOnClick">
+	    <Rectangle Grid.Row="0" Grid.Column="0" Fill="#454545" ZIndex="0"></Rectangle>
+	    <Rectangle Grid.Row="0" Grid.Column="1" Fill="#454545"></Rectangle>
+	    <Rectangle Grid.Row="0" Grid.Column="2" Fill="#454545"></Rectangle>
+	    <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+		    <Label Background="#d9d9d9" Foreground="#0e0e0e" Width="90" HorizontalContentAlignment="Center" CornerRadius="5">TTD</Label>
+	    </StackPanel>
+	    <WrapPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" ZIndex="1" Orientation="Vertical" ItemWidth="35" VerticalAlignment="Center">
+            <Button Background="#d9d9d9" CornerRadius="5,5,0,0" BorderThickness="1,1,1,0" Click="ButtonLineOnClick">
 	            <StackPanel>
 		            <Image Source="icons/line.png"></Image>
 	            </StackPanel>
             </Button>
-	        <Button Click="ButtonSquareOnClick">
+	        <Button Background="#d9d9d9" BorderThickness="1,1,1,0" Click="ButtonSquareOnClick">
 		        <StackPanel>
 			        <Image Source="icons/square.png"></Image>
 		        </StackPanel>
 	        </Button>
-	        <Button Click="ButtonCircleOnClick">
+	        <Button Background="#d9d9d9" BorderThickness="1,1,1,0" Click="ButtonCircleOnClick">
 		        <StackPanel>
 			        <Image Source="icons/circle.png"></Image>
 		        </StackPanel>
 	        </Button>
-	        <Button Click="ButtonCurvedOnClick">
+	        <Button Background="#d9d9d9" CornerRadius="0,0,5,5" BorderThickness="1,1,1,1" Click="ButtonCurvedOnClick">
 		        <StackPanel>
 			        <Image Source="icons/curved.png"></Image>
 		        </StackPanel>
