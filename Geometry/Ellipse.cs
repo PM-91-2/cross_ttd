@@ -59,7 +59,7 @@ namespace Geometry
         public string InputOutputData => PathData;
 
         // В эллипсоид передаются координаты (нижний левый угол и верхний правый угол) прямоугольника, в который вписан эллипс
-        public Ellipse(Vector2 point1, Vector2 point2)
+        public Ellipse(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke)
         {
             _points = new List<Vector2> {
                 point1, point2, new Vector2(point1.X, point2.Y), new Vector2(point2.X, point1.Y)
@@ -68,6 +68,9 @@ namespace Geometry
 
             // Порядок точек: левая нижняя, левая верхняя, правая нижняя, правая верхняя
             SortPoints();
+
+            ArgbFill = argb_fill;
+            ArgbStroke = argb_stroke;
         }
 
         public bool IsPointInFigure(Vector2 point)
