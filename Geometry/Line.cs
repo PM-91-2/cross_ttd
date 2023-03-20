@@ -146,7 +146,7 @@ namespace Geometry
             }
 
             // Обновление точек фигуры
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 2; i++) {
                 _points[i] = new Vector2(
                     _bounds[idx_op].X + boundEps * signX[idx_op] + (_points[i].X - (_bounds[idx_op].X + boundEps * signX[idx_op])) * kx,
                     _bounds[idx_op].Y + boundEps * signY[idx_op] + (_points[i].Y - (_bounds[idx_op].Y + boundEps * signY[idx_op])) * ky);
