@@ -18,7 +18,8 @@ namespace Geometry
             }
         }
 
-
+        public string BoundsData =>
+            string.Format("M {0},{1} L {2},{3}");
         public string InputOutputData => PathData;
 
         public Line(Vector2 point1, Vector2 point2) {
@@ -29,7 +30,7 @@ namespace Geometry
 
         }
 
-        public bool IsPointOnLine(Vector2 point, float eps) {
+        public bool IsPointinFigure(Vector2 point, float eps) {
             var Distance1 = Math.Pow((Math.Pow((_points[0].X-point.X),2)+Math.Pow((_points[0].Y-point.Y),2)),0.5);
             var Distance2 = Math.Pow((Math.Pow((_points[1].X-point.X),2)+Math.Pow((_points[1].Y-point.Y),2)),0.5);
             var Distance3 = Math.Pow((Math.Pow((_points[0].X-_points[1].X),2)+Math.Pow((_points[0].Y-_points[1].Y),2)),0.5);
@@ -81,5 +82,6 @@ namespace Geometry
            else if ((startPosition.X - _points[1].X) <= Eps)
            _points[1] = newPosition;
         }
+        public void SortPoints(){}
     }
-}
+
