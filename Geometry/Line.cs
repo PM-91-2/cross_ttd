@@ -30,10 +30,11 @@ namespace Geometry
         }
 
         public bool IsPointOnLine(Vector2 point, float eps) {
-         var Distance ((point1.X-point.X)**2+(point1.Y-point.Y)**2)**0.5+
-            ((point2.X-point.X)**2+(point2.Y-point.Y)**2)**0.5-
-            ((point1.X-point2.X)**2+(point1.Y-ppint2.Y)**2)**0.5
-            return Distance <= 2*Eps
+            var Distance1 = Math.Pow((Math.Pow((_points[0].X-point.X),2)+Math.Pow((_points[0].Y-point.Y),2)),0.5);
+            var Distance2 = Math.Pow((Math.Pow((_points[1].X-point.X),2)+Math.Pow((_points[1].Y-point.Y),2)),0.5);
+            var Distance3 = Math.Pow((Math.Pow((_points[0].X-_points[1].X),2)+Math.Pow((_points[0].Y-_points[1].Y),2)),0.5);
+            var Difference = Distance1 + Distance2 - Distance3;
+            return Difference <= 2*Eps;
         }
 
         public int IsPointNearVerticle(Vector2 point) {
