@@ -30,7 +30,7 @@ namespace Geometry
 
         }
 
-        public bool IsPointinFigure(Vector2 point, float eps) {
+        public bool IsPointInFigure(Vector2 point, float eps) {
             var Distance1 = Math.Pow((Math.Pow((_points[0].X-point.X),2)+Math.Pow((_points[0].Y-point.Y),2)),0.5);
             var Distance2 = Math.Pow((Math.Pow((_points[1].X-point.X),2)+Math.Pow((_points[1].Y-point.Y),2)),0.5);
             var Distance3 = Math.Pow((Math.Pow((_points[0].X-_points[1].X),2)+Math.Pow((_points[0].Y-_points[1].Y),2)),0.5);
@@ -54,7 +54,7 @@ namespace Geometry
                 _points[i] = new Vector2(_points[i].X + moveVector.X, _points[i].Y + moveVector.Y);
 
         }
-        }
+        
         public void Rotate(float angle) {
             // Пересчет угла, чтобы он находился в промежутке от 0 до 360 градусов
             _angle += angle % 360 + 360;
@@ -84,4 +84,4 @@ namespace Geometry
         }
         public void SortPoints(){}
     }
-
+}
