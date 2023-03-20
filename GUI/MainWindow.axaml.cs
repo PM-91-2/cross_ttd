@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -27,10 +26,11 @@ enum EnumState
     Line,
     Ellipse,
     Free,
-    Curve
+    Curve,
+    Select
 }
 
-public partial class MainWindow : Window, INotifyPropertyChanged
+public partial class MainWindow : Window
 {
     public List<IFigure> figureArray = new List<IFigure>();
     // public ObservableCollection<Geometry.IFigure> Figures = new ObservableCollection<IFigure>();
@@ -60,17 +60,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         InitializeComponent();
     }
 
-    private void ButtonProfilesOnClick(object? sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void ButtonSettingsOnClick(object? sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void ButtonFilesOnClick(object? sender, RoutedEventArgs e)
+    private void ButtonLoadOnClick(object? sender, RoutedEventArgs e)
     {
         IO.Svg svgObj = new IO.Svg();
         List<ListFigureSvg> attrs = svgObj.LoadFromSVG();
@@ -100,7 +90,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
-    private void ButtonToolsOnClick(object? sender, RoutedEventArgs e)
+    private void ButtonSaveOnClick(object? sender, RoutedEventArgs e)
     {
         List<ListFigureSvg> exportArray = new List<ListFigureSvg>();
         foreach (IFigure figure in figureArray) {
@@ -198,7 +188,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 break;
             }
-            case EnumState.Free:
+            case EnumState.Free or EnumState.Select:
             {
                 for (int i = 0; i < figureArray.Count; i++)
                 {
@@ -207,6 +197,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     if (tmpSelectedFigure != selectedFlagArray[i])
                     {
                         UpdateCanvas();
+                        State = EnumState.Select;
                     }
                 }
             
@@ -444,5 +435,37 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         grid.Children.Add(pathFigure[0]);
         grid.Children.Add(pathFigure[1]);
         ThisCanv.Children.Add(grid);
+    }
+
+    private void KeyEvents(object? sender, KeyEventArgs e)
+    {
+        switch (State)
+        {
+            case EnumState.Select:
+                var selectedIndex = -1;
+                for (int i = 0; i < figureArray.Count; i++)
+                {
+                    if (selectedFlagArray[i] is true)
+                    {
+                        selectedIndex = i;
+                    }
+                }
+                if (e.Key is Key.Delete)
+                {
+                    DeleteFigure(selectedIndex);
+                }
+                break;
+        }
+    }
+
+    private void DeleteFigure(int index)
+    {
+        ThisCanv.Children.RemoveAt(index);
+        figureArray.RemoveAt(index);
+        selectedFlagArray.RemoveAt(index);
+        moveFlagArray.RemoveAt(index);
+        scaleFlagArray.RemoveAt(index);
+        rotateFlagArray.RemoveAt(index);
+        State = EnumState.Free;
     }
 }
