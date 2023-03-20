@@ -293,10 +293,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         selectedFlagArray.Add(false);
     }
 
-    public void CreateEllipse(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
+    public void CreateEllipse(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke, Boolean needBoundingBox)
     {
-        IFigure rectangle = new Ellipse(point1, point2);
-        DrawFigure(rectangle, argb_fill, arbg_stroke, needBoundingBox);
+        IFigure rectangle = new Ellipse(point1, point2, argb_fill, argb_stroke);
+        DrawFigure(rectangle, argb_fill, argb_stroke, needBoundingBox);
         figureArray.Add(rectangle);
         moveFlagArray.Add(false);
         scaleFlagArray.Add(false);
