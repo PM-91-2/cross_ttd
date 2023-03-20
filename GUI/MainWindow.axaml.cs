@@ -51,6 +51,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private EnumState State = EnumState.Free;
 
     private Point initialRotatingPoint = new Point();
+    private double previousRotationDegree = 0;
 
     private bool IsPressed = false;
 
@@ -318,19 +319,47 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
             if (rotateFlagArray[i])
             {
-                var somePoint = e.GetPosition(ThisCanv);
-                var rotateAngle = 1;
+                var angle = 2;
+                var dragPoint = e.GetPosition(ThisCanv);
 
-                if (somePoint.Y - initialRotatingPoint.Y < 0)
+                Vector2 center = new Vector2(
+                    (secondPoint.X - firstPoint.X) / 2,
+                    (secondPoint.Y - firstPoint.Y) / 2
+                );
+
+                var rotationAngle = GetRotationAngle(
+                    GetPointWithNewCenter(center, initialRotatingPoint), 
+                    GetPointWithNewCenter(center, dragPoint)
+                    );
+
+                if (rotationAngle < previousRotationDegree)
                 {
-                    rotateAngle = -1;
+                    angle = -angle;
                 }
-
-                figureArray[i].Rotate(rotateAngle);
+                
+                figureArray[i].Rotate(angle);
                 DrawFigure(figureArray[i], figureArray[i].ArgbFill, figureArray[i].ArgbStroke, selectedFlagArray[i]);
-                initialRotatingPoint = somePoint;
+                
+                previousRotationDegree = rotationAngle;
             }
         }
+    }
+    
+    private static double GetRotationAngle(Point initialPoint, Point dragPoint)
+    {
+        double x1 = initialPoint.X, y1 = initialPoint.Y;
+        double x2 = dragPoint.X, y2 = dragPoint.Y;
+        double A = Math.Atan2(y1 - y2, x1 - x2) / Math.PI * 180;
+
+        return (A < 0) ? A + 360 : A;
+    }
+
+    private static Point GetPointWithNewCenter(Vector2 center, Point point)
+    {
+        return new Point(
+                center.X - point.X,
+                center.Y - point.Y
+            );
     }
 
     private void CreateLine(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke, Boolean needBoundingBox)

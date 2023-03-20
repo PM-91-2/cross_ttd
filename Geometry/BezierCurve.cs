@@ -13,13 +13,14 @@ namespace Geometry {
         private float _angle;
         public List<byte> ArgbFill { get; set; }
         public List<byte> ArgbStroke { get; set; }
+
         public string PathData =>
             String.Format("M {0},{1} C {2},{3} {4},{5} {6},{7}",
                 _points[0].X, _points[0].Y, _points[1].X, _points[1].Y,
                 _points[2].X, _points[2].Y, _points[3].X, _points[3].Y);
 
         public ListFigureSvg ExportData => new ListFigureSvg(_points, "Curve", ArgbFill, ArgbStroke);
-       
+
         public string BoundsData => string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
             _bounds[0].X, _bounds[0].Y, _bounds[1].X, _bounds[1].Y,
             _bounds[3].X, _bounds[3].Y, _bounds[2].X, _bounds[2].Y);
@@ -33,7 +34,8 @@ namespace Geometry {
             };
             ArgbStroke = argb_stroke;
             ArgbFill = argb_fill;
-            DefineBounds(); 
+            DefineBounds();
+            SortPoints();
             _position = _points[0];
         }
 
@@ -43,17 +45,17 @@ namespace Geometry {
             var point3 = GeometryUtils.RectangleSideProduct(point, _bounds[3], _bounds[2]);
             var point4 = GeometryUtils.RectangleSideProduct(point, _bounds[2], _bounds[0]);
 
-            return point1 < 0 && point2 < 0 && point3 < 0 && point4 < 0;
+            return point1 > 0 && point2 > 0 && point3 > 0 && point4 > 0;
         }
 
         public int IsPointNearVerticle(Vector2 point) {
-            float eps = 25.0f;  // Радиус взаимодействия с точкой масштабирования
-                if (Vector2.Distance(_bounds[0], point) < eps) return 0;
-                else if (Vector2.Distance(_bounds[1], point) < eps) return 1;
-                else if (Vector2.Distance(_bounds[2], point) < eps) return 2;
-                else if (Vector2.Distance(_bounds[3], point) < eps) return 3;
-                else return -1;
-            }
+            float eps = 25.0f; // Радиус взаимодействия с точкой масштабирования
+            if (Vector2.Distance(_bounds[0], point) < eps) return 0;
+            else if (Vector2.Distance(_bounds[1], point) < eps) return 1;
+            else if (Vector2.Distance(_bounds[2], point) < eps) return 2;
+            else if (Vector2.Distance(_bounds[3], point) < eps) return 3;
+            else return -1;
+        }
 
         // todo: change implementation
         public void Move(Vector2 startPosition, Vector2 newPosition) {
@@ -76,18 +78,18 @@ namespace Geometry {
             _angle = _angle % 360;
 
             // Операция поворота
-            float angleConvert = (float)Math.PI * angle / 180;  // Перевод градусов в радианы
+            float angleConvert = (float)Math.PI * angle / 180; // Перевод градусов в радианы
             List<Vector2> rotateMatrix = new List<Vector2> {
                 new Vector2((float)Math.Cos(angleConvert), -(float)Math.Sin(angleConvert)),
                 new Vector2((float)Math.Sin(angleConvert), (float)Math.Cos(angleConvert))
-            };  // Матрица поворота
-            Vector2 center = Vector2.Multiply(0.5f, _points[2] + _points[1]);  // Центр фигуры
-            for (int i = 0; i < 4; i++) _points[i] -= center;  // Перенос в начало координат
+            }; // Матрица поворота
+            Vector2 center = Vector2.Multiply(0.5f, _points[2] + _points[1]); // Центр фигуры
+            for (int i = 0; i < 4; i++) _points[i] -= center; // Перенос в начало координат
             for (int i = 0; i < _points.Count; i++)
                 _points[i] = new Vector2(
                     rotateMatrix[0].X * _points[i].X + rotateMatrix[0].Y * _points[i].Y,
                     rotateMatrix[1].X * _points[i].X + rotateMatrix[1].Y * _points[i].Y);
-            for (int i = 0; i < 4; i++) _points[i] += center;  // Перенос в прежнее место
+            for (int i = 0; i < 4; i++) _points[i] += center; // Перенос в прежнее место
 
             // Вспомогательные массивы для обновления рамки
             float x1 = new float[] { _points[0].X, _points[1].X, _points[2].X, _points[3].X }.Min();
@@ -103,17 +105,17 @@ namespace Geometry {
         }
 
         public void Scale(Vector2 point, int flag) {
-            float kx = 1;  // Коэффициент масштаба по оси Х
-            float ky = 1;  // Коэффициент масштаба по оси Y
+            float kx = 1; // Коэффициент масштаба по оси Х
+            float ky = 1; // Коэффициент масштаба по оси Y
             int[] left = new int[] { 1, 0 };
             int[] down = new int[] { 0, 2 };
             int[] right = new int[] { 2, 3 };
             int[] up = new int[] { 3, 1 };
-            int[] pointOrder = new int[] {0, 2, 3, 1};  // Порядок вершин при обходе против часовой стрелки
-            int[] signX = new int[] {1, 1, -1, -1};  // Для отступа рамки вокруг фигуры
-            int[] signY = new int[] { -1, 1, -1, 1 };  // Для отступа рамки вокруг фигуры
-            int idx = flag;  // Индекс вершины, за которую масштабируют
-            int idx_op = pointOrder[(Array.IndexOf(pointOrder, idx) + 2) % 4];  // Индекс противоположной вершины
+            int[] pointOrder = new int[] { 0, 2, 3, 1 }; // Порядок вершин при обходе против часовой стрелки
+            int[] signX = new int[] { 1, 1, -1, -1 }; // Для отступа рамки вокруг фигуры
+            int[] signY = new int[] { -1, 1, -1, 1 }; // Для отступа рамки вокруг фигуры
+            int idx = flag; // Индекс вершины, за которую масштабируют
+            int idx_op = pointOrder[(Array.IndexOf(pointOrder, idx) + 2) % 4]; // Индекс противоположной вершины
 
             // Для блока выворачивания фигуры
             bool x_changeble = point.X * -signX[idx] + _bounds[idx_op].X * -signX[idx_op] > 2 * Math.Abs(boundEps);
@@ -123,9 +125,9 @@ namespace Geometry {
             if (x_changeble) {
                 // Пересчет коэф. масштаба по Х
                 kx = Math.Abs(
-                    (point.X + boundEps * signX[idx] - (_bounds[idx_op].X + boundEps * signX[idx_op])) /
-                    (_bounds[idx].X + boundEps * signX[idx] - (_bounds[idx_op].X + boundEps * signX[idx_op]))
-                    );
+                    (point.X + boundEps * signX[idx] - (_bounds[idx_op].X + boundEps * signX[idx_op]))
+                    / (_bounds[idx].X + boundEps * signX[idx] - (_bounds[idx_op].X + boundEps * signX[idx_op]))
+                );
 
                 // Поиск индекса вершины(не под курсором), которую нужно переместить по Х
                 int idx_near;
@@ -141,9 +143,9 @@ namespace Geometry {
             if (y_changeble) {
                 // Пересчет коэф. масштаба по Y
                 ky = Math.Abs(
-                    (point.Y + boundEps * signY[idx] - (_bounds[idx_op].Y + boundEps * signY[idx_op])) /
-                    (_bounds[idx].Y + boundEps * signY[idx] - (_bounds[idx_op].Y + boundEps * signY[idx_op]))
-                    );
+                    (point.Y + boundEps * signY[idx] - (_bounds[idx_op].Y + boundEps * signY[idx_op]))
+                    / (_bounds[idx].Y + boundEps * signY[idx] - (_bounds[idx_op].Y + boundEps * signY[idx_op]))
+                );
 
                 // Поиск индекса вершины(не под курсором), которую нужно переместить по Х
                 int idx_near;
@@ -162,6 +164,7 @@ namespace Geometry {
                     _bounds[idx_op].Y + boundEps * signY[idx_op] + (_points[i].Y - (_bounds[idx_op].Y + boundEps * signY[idx_op])) * ky);
             }
         }
+
         public void SortPoints() {
             _bounds = _bounds.OrderBy(v => v.X).ThenByDescending(v => v.Y).ToList();
         }
@@ -172,7 +175,7 @@ namespace Geometry {
             float MinX = _points[0].X;
             float MaxY = _points[0].Y;
             float MinY = _points[0].Y;
-            
+
             for (int i = 1; i < _points.Count(); i++) {
                 if (_points[i].X > MaxX) MaxX = _points[i].X;
                 if (_points[i].X < MinX) MinX = _points[i].X;
