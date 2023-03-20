@@ -60,7 +60,7 @@ namespace Geometry {
         }
 
         private void DefineBounds() {
-            float eps = 10f;
+            float eps = 10.0f;
             float MaxX = _points[0].X;
             float MinX = _points[0].X;
             float MaxY = _points[0].Y;
@@ -69,15 +69,15 @@ namespace Geometry {
             for (int i = 1; i < _points.Count(); i++) {
                 if (_points[i].X > MaxX) MaxX = _points[i].X;
                 if (_points[i].X < MinX) MinX = _points[i].X;
-                if (_points[i].X > MaxY) MaxY = _points[i].Y;
-                if (_points[i].X < MinY) MinY = _points[i].Y;
+                if (_points[i].Y > MaxY) MaxY = _points[i].Y;
+                if (_points[i].Y < MinY) MinY = _points[i].Y;
             }
 
             _bounds = new List<Vector2>() {
                 new Vector2(MaxX + eps, MaxY + eps),
                 new Vector2(MaxX + eps, MinY - eps),
                 new Vector2(MinX - eps, MaxY + eps),
-                new Vector2(MinX - eps, MinY- eps)
+                new Vector2(MinX - eps, MinY - eps)
             };
         }
     }

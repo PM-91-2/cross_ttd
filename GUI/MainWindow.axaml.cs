@@ -248,7 +248,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                             return;
                         }
                     }
-                    CreateBezierCurveFromTool(BezierPoints[0], BezierPoints[1], BezierPoints[2], BezierPoints[3], new List<byte>() { 0, 0, 0, 0 },
+                    CreateBezierCurveFromTool(BezierPoints[0], BezierPoints[2], BezierPoints[3], BezierPoints[1], new List<byte>() { 0, 0, 0, 0 },
                         new List<byte>() { 255, 90, 255, 0 }, true);
                     State = EnumState.Free;
                     for (int i = 0; i < BezierFlagsArray.Count(); i++) {
