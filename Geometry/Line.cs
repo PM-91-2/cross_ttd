@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System;
+using IO;
 
 namespace Geometry 
 {
@@ -10,7 +11,16 @@ namespace Geometry
         private List<Vector2> _points;
         private List<Vector2> _bounds;
         private float _angle = 0f;
-        private float boundEps = 25;
+        private float boundEps = 10;
+        public List<byte> ArgbFill { get; set; }
+        public List<byte> ArgbStroke { get; set; }
+        public ListFigureSvg ExportData
+        {
+            get
+            {
+                return new ListFigureSvg(_points, "rectangle", ArgbStroke, ArgbFill, true);
+            }
+        }
 
         public string PathData {
             get {
@@ -25,12 +35,12 @@ namespace Geometry
             _bounds[3].X, _bounds[3].Y, _bounds[2].X, _bounds[2].Y);
         public string InputOutputData => PathData;
 
-        public Line(Vector2 point1, Vector2 point2) {
+        public Line(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke) {
             _points = new List<Vector2> {
                 point1,
                 point2
             };
-            
+
             float min_x = new float [] { point1.X, point2.X }.Min() - boundEps;
             float max_x = new float [] { point1.X, point2.X }.Max() + boundEps;
             float min_y = new float[] { point1.Y, point2.Y }.Min() - boundEps;
@@ -39,14 +49,18 @@ namespace Geometry
             {
                 new Vector2(min_x, max_y), new Vector2(min_x, min_y), new Vector2(max_x, max_y), new Vector2(max_x, min_y)
             };
+
+            ArgbFill = argb_fill;
+            ArgbStroke = argb_stroke;
         }
 
         public bool IsPointInFigure(Vector2 point) {
-            var Distance1 = Vector2.Distance(_points[0],point);
-            var Distance2 = Vector2.Distance(_points[1],point);
-            var Distance3 = Vector2.Distance(_points[0],_points[1]);
+            float eps = 25f;
+            var Distance1 = Math.Pow((Math.Pow((_points[0].X-point.X),2)+Math.Pow((_points[0].Y-point.Y),2)),0.5);
+            var Distance2 = Math.Pow((Math.Pow((_points[1].X-point.X),2)+Math.Pow((_points[1].Y-point.Y),2)),0.5);
+            var Distance3 = Math.Pow((Math.Pow((_points[0].X-_points[1].X),2)+Math.Pow((_points[0].Y-_points[1].Y),2)),0.5);
             var Difference = Distance1 + Distance2 - Distance3;
-            return Difference <= 2*boundEps;
+            return Difference <= eps;
         }
 
         public int IsPointNearVerticle(Vector2 point) {
@@ -89,10 +103,10 @@ namespace Geometry
                     rotateMatrix[1].X * _points[i].X + rotateMatrix[1].Y * _points[i].Y);
             for (int i = 0; i < 2; i++) _points[i] += center;  // Перенос в прежнее место
                 // Вспомогательные массивы для обновления рамки
-            float x1 = new float[] { _points[0].X, _points[1].X, _points[2].X, _points[3].X }.Min();
-            float x2 = new float[] { _points[0].X, _points[1].X, _points[2].X, _points[3].X }.Max();
-            float y1 = new float[] { _points[0].Y, _points[1].Y, _points[2].Y, _points[3].Y }.Min();
-            float y2 = new float[] { _points[0].Y, _points[1].Y, _points[2].Y, _points[3].Y }.Max();
+            float x1 = new float[] { _points[0].X, _points[1].X }.Min();
+            float x2 = new float[] { _points[0].X, _points[1].X }.Max();
+            float y1 = new float[] { _points[0].Y, _points[1].Y }.Min();
+            float y2 = new float[] { _points[0].Y, _points[1].Y }.Max();
 
             // Пересчет точек рамки
             _bounds[0] = new Vector2(x1 - boundEps, y2 + boundEps);
