@@ -1,6 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{00E87D9D-E90E-4F02-801B-FF7403744DEB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7D828850-D4ED-454C-A98C-9D685D9714BC} = {7D828850-D4ED-454C-A98C-9D685D9714BC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic", "Logic\Logic.csproj", "{CA6F360F-68EA-408E-8349-40D284081F0A}"
 EndProject
