@@ -59,12 +59,15 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     Button colorButton = new Button();
     
+    Slider sliderA = new Slider();
     Slider sliderR = new Slider();
     Slider sliderG = new Slider();
     Slider sliderB = new Slider();
+    Label labelA = new Label();
     Label labelR = new Label();
     Label labelG = new Label();
     Label labelB = new Label();
+    Label labelAValue = new Label();
     Label labelRValue = new Label();
     Label labelGValue = new Label();
     Label labelBValue = new Label();
@@ -95,26 +98,31 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         panel.Height = 20;                                                                                                             
         panel.Width = 20;                                                                                                              
-        panel.Background = new SolidColorBrush(Color.FromArgb(255, (byte)sliderR.Value, (byte)sliderG.Value, (byte)sliderB.Value));    
-                                                                                                                               
-        sliderR.Width = sliderG.Width = sliderB.Width = 100;                                                                           
-        sliderR.Minimum = sliderG.Minimum = sliderB.Minimum = 0;                                                                       
-        sliderR.Maximum = sliderG.Maximum = sliderB.Maximum = 255;                                                                     
-        
+        panel.Background = new SolidColorBrush(Color.FromArgb((byte)sliderA.Value, (byte)sliderR.Value, (byte)sliderG.Value, (byte)sliderB.Value));    
+                                                                                                                           
+        sliderA.Width = sliderR.Width = sliderG.Width = sliderB.Width = 100;                                                                           
+        sliderA.Minimum = sliderR.Minimum = sliderG.Minimum = sliderB.Minimum = 0;                                                                       
+        sliderA.Maximum = sliderR.Maximum = sliderG.Maximum = sliderB.Maximum = 255;
+
+        labelA.Content = "ALPHA:"; 
         labelR.Content = "RED:";                                                                                                       
         labelG.Content = "GREEN:";                                                                                                     
         labelB.Content = "BLUE:"; 
         labelColor.Content = "Color:";
         spaceLabel.Width = 35;
-        labelR.Width = labelG.Width = labelB.Width = labelColor.Width = 50;                                                            
-                                                                                                                               
+        labelA.Width = labelR.Width = labelG.Width = labelB.Width = labelColor.Width = 50;                                                            
+         
+        labelAValue.Content = (int)sliderA.Value; 
         labelRValue.Content = (int)sliderR.Value;                                                                                      
         labelGValue.Content = (int)sliderG.Value;                                                                                      
         labelBValue.Content = (int)sliderB.Value;                                                                                      
                                                                                                                                
         closeClrPickButton.Content = "Close";                                                                                          
-        closeClrPickButton.Click += CloseClrPickButtonOnClick;                                                                         
-                                                                                                                               
+        closeClrPickButton.Click += CloseClrPickButtonOnClick;   
+        
+        WP_clrPick.Children.Add(labelA);                                                                                               
+        WP_clrPick.Children.Add(sliderA);                                                                                              
+        WP_clrPick.Children.Add(labelAValue);                                                                                                                       
         WP_clrPick.Children.Add(labelR);                                                                                               
         WP_clrPick.Children.Add(sliderR);                                                                                              
         WP_clrPick.Children.Add(labelRValue);                                                                                          
@@ -134,7 +142,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void TimerOnTick(object? sender, EventArgs e)
     {
-        panel.Background = new SolidColorBrush(Color.FromArgb(255, (byte)sliderR.Value, (byte)sliderG.Value, (byte)sliderB.Value));
+        panel.Background = new SolidColorBrush(Color.FromArgb((byte)sliderA.Value, (byte)sliderR.Value, (byte)sliderG.Value, (byte)sliderB.Value));
+        labelAValue.Content = ((int)sliderA.Value).ToString();
         labelRValue.Content = ((int)sliderR.Value).ToString();                                                                            
         labelGValue.Content = ((int)sliderG.Value).ToString();                                                                            
         labelBValue.Content = ((int)sliderB.Value).ToString();
@@ -229,7 +238,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (index >= 0)
         {
             figureArray[index].ArgbFill =                                                                     
-                new List<byte>() { 255, (byte)sliderR.Value, (byte)sliderG.Value, (byte)sliderB.Value }; 
+                new List<byte>() { (byte)sliderA.Value, (byte)sliderR.Value, (byte)sliderG.Value, (byte)sliderB.Value }; 
         }
         for (int i = 0; i < figureArray.Count; i++)
         {
