@@ -250,6 +250,7 @@ namespace IO {
                         break;
                 }
             }
+            svgDoc.Write("Logo_250x150.svg");
         }
         
         private SvgEllipse SaveEllipse(ListFigureSvg ellip)
@@ -284,8 +285,8 @@ namespace IO {
             SvgPathSegmentList Data = new SvgPathSegmentList();
             Data.Add(new SvgMoveToSegment(false, new PointF(rectangle.points[0].X,rectangle.points[0].Y))); 
             Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[1].X, rectangle.points[1].Y)));
-            Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[2].X, rectangle.points[2].Y)));
             Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[3].X, rectangle.points[3].Y)));
+            Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[2].X, rectangle.points[2].Y)));
             Data.Add(new SvgClosePathSegment(true));
             var bezie_path = new SvgPath()
             {

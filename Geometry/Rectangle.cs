@@ -27,7 +27,7 @@ namespace Geometry
 
         public ListFigureSvg ExportData {
             get {
-                return new ListFigureSvg(_points, "rectangle", ArgbFill, ArgbStroke, true);
+                return new ListFigureSvg(_points, "rectangle", ArgbStroke,ArgbFill , true);
             }
         }
 
