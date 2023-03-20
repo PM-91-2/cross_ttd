@@ -10,7 +10,8 @@ namespace Geometry
         private List<Vector2> _bounds;
         private float _angle = 0f;
         private float boundEps = 10;
-
+        public List<byte> ArgbFill { get; set; }
+        public List<byte> ArgbStroke { get; set; }
         public string PathData {
             get {
                 return string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
@@ -26,13 +27,48 @@ namespace Geometry
 
         public string InputOutputData => PathData;
 
-        public Rectangle(Vector2 point1, Vector2 point2) {
+        public Rectangle(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke) {
             _points = new List<Vector2> {
                 point1, point2, new Vector2(point1.X, point2.Y), new Vector2(point2.X, point1.Y)
             };
 
             // Порядок точек: левая нижняя, левая верхняя, правая нижняя, правая верхняя
             SortPoints();
+
+            ArgbFill = argb_fill;
+            ArgbStroke = argb_stroke;
+        }
+        public Rectangle(Vector2 point1, Vector2 point2, Vector2 point3, Vector2 point4, List<byte> argb_fill, List<byte> argb_stroke)
+        {
+            _points = new List<Vector2> {
+                point1, point2, point3, point4
+            };
+
+            // Порядок точек: левая нижняя, левая верхняя, правая нижняя, правая верхняя
+            SortPoints();
+            
+            // Пересчет для импорта !!!
+            float x1 = new float[] { _points[0].X, _points[1].X, _points[2].X, _points[3].X }.Min();
+            float x2 = new float[] { _points[0].X, _points[1].X, _points[2].X, _points[3].X }.Max();
+            float y1 = new float[] { _points[0].Y, _points[1].Y, _points[2].Y, _points[3].Y }.Min();
+            float y2 = new float[] { _points[0].Y, _points[1].Y, _points[2].Y, _points[3].Y }.Max();
+
+            // Пересчет точек рамки
+            _bounds[0] = new Vector2(x1 - boundEps, y2 + boundEps);
+            _bounds[1] = new Vector2(x1 - boundEps, y1 - boundEps);
+            _bounds[2] = new Vector2(x2 + boundEps, y2 + boundEps);
+            _bounds[3] = new Vector2(x2 + boundEps, y1 - boundEps);
+
+            // Дополнительная проверка при импорте 
+            if (_points[1].X <= _points[2].X && _points[1].Y >= _points[2].Y) {
+                float tx = _points[2].X;
+                float ty = _points[2].Y;
+                _points[2] = new Vector2(_points[1].X, _points[1].Y);
+                _points[1] = new Vector2(tx, ty);
+            }
+
+            ArgbFill = argb_fill;
+            ArgbStroke = argb_stroke;
         }
 
         public bool IsPointInFigure(Vector2 point) {

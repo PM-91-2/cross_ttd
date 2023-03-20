@@ -192,7 +192,7 @@ namespace IO {
                         SvgLineSegment rectangle = (SvgLineSegment)svgPath.PathData[i];
                         points.Add(new Vector2(rectangle.End.X, rectangle.End.Y));
                     }
-                    name = "treangle";
+                    name = "rectangle";
                 }
             }
             List<byte> path_stroke;

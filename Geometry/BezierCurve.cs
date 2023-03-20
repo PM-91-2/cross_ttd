@@ -9,7 +9,8 @@ namespace Geometry {
         private List<Vector2> _points;
         private List<Vector2> _bounds;
         private Vector2 _position;
-
+        public List<byte> ArgbFill { get; set; }
+        public List<byte> ArgbStroke { get; set; }
         public string PathData =>
             String.Format("M {0},{1} C {2},{3} {4},{5} {6},{7}",
                 _points[0].X, _points[0].Y, _points[1].X, _points[1].Y,
