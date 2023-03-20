@@ -30,7 +30,7 @@ namespace Geometry
 
         }
 
-        public bool IsPointInFigure(Vector2 point, float eps) {
+        public bool IsPointInFigure(Vector2 point) {
             var Distance1 = Math.Pow((Math.Pow((_points[0].X-point.X),2)+Math.Pow((_points[0].Y-point.Y),2)),0.5);
             var Distance2 = Math.Pow((Math.Pow((_points[1].X-point.X),2)+Math.Pow((_points[1].Y-point.Y),2)),0.5);
             var Distance3 = Math.Pow((Math.Pow((_points[0].X-_points[1].X),2)+Math.Pow((_points[0].Y-_points[1].Y),2)),0.5);
@@ -76,11 +76,9 @@ namespace Geometry
 
         }
         
-        public void Scale(Vector2 startPosition, Vector2 newPosition) {
-           if ((startPosition.X - _points[0].X) <= Eps) 
-           _points[0] = newPosition;
-           else if ((startPosition.X - _points[1].X) <= Eps)
-           _points[1] = newPosition;
+        public void Scale(Vector2 newPosition, int flag) {
+            int idx = flag; 
+           _points[idx]=newPosition;
         }
         public void SortPoints(){}
     }
