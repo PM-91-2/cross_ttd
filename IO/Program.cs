@@ -6,7 +6,7 @@ using Svg.Pathing;
 namespace IO {
     public class Svg
     {
-        private string fileName = "../../../template.svg";
+        private string fileName = "../../../../template.svg";
         private List<ListFigureSvg> figure_attributes = new List<ListFigureSvg>();
         public List<ListFigureSvg> LoadFromSVG()
         {
@@ -192,7 +192,7 @@ namespace IO {
                         SvgLineSegment rectangle = (SvgLineSegment)svgPath.PathData[i];
                         points.Add(new Vector2(rectangle.End.X, rectangle.End.Y));
                     }
-                    name = "treangle";
+                    name = "rectangle";
                 }
             }
             List<byte> path_stroke;
@@ -250,6 +250,7 @@ namespace IO {
                         break;
                 }
             }
+            svgDoc.Write("../../../../template_new.svg");
         }
         
         private SvgEllipse SaveEllipse(ListFigureSvg ellip)
@@ -284,8 +285,8 @@ namespace IO {
             SvgPathSegmentList Data = new SvgPathSegmentList();
             Data.Add(new SvgMoveToSegment(false, new PointF(rectangle.points[0].X,rectangle.points[0].Y))); 
             Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[1].X, rectangle.points[1].Y)));
-            Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[2].X, rectangle.points[2].Y)));
             Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[3].X, rectangle.points[3].Y)));
+            Data.Add(new SvgLineSegment(false,new PointF(rectangle.points[2].X, rectangle.points[2].Y)));
             Data.Add(new SvgClosePathSegment(true));
             var bezie_path = new SvgPath()
             {
