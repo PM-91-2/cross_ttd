@@ -37,11 +37,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private List<bool> rotateFlagArray = new List<bool>();
     private List<bool> selectedFlagArray = new List<bool>();
 
-    private List<bool> IsActive = new List<bool>();
     private int _pointflag = -1;
 
-    private Vector2 firstPoint;
-    private Vector2 secondPoint;
+    private Vector2 firstPoint = new Vector2(0, 0);
+    private Vector2 secondPoint = new Vector2(0, 0);
     private EnumState State = EnumState.Free;
 
     private Point initialRotatingPoint = new Point();
@@ -51,8 +50,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public MainWindow()
     {
         InitializeComponent();
-        firstPoint = new Vector2(0, 0);
-        secondPoint = new Vector2(0, 0);
     }
 
     private void ButtonProfilesOnClick(object? sender, RoutedEventArgs e)
@@ -75,10 +72,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         throw new NotImplementedException();
     }
 
-    private void ButtonLineOnClick(object? sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
+  
 
     private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
     {
@@ -88,7 +82,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         Thread.CurrentThread.CurrentCulture = customCulture;
 
         var pathFigure = new Path();
-        var tmp = figure.PathData;
 
         pathFigure.Data = Avalonia.Media.Geometry.Parse(figure.PathData);
         SolidColorBrush mySolidColorBrush = new SolidColorBrush();
@@ -103,7 +96,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var pathBounds = new Path();
         if (needBoundingBox)
         {
-            var tmpbounds = figure.BoundsData;
             pathBounds.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
             SolidColorBrush mySolidColorBrushBounds = new SolidColorBrush();
             mySolidColorBrushBounds.Color = Color.FromArgb(255, 0, 0, 0);
@@ -128,31 +120,23 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
+    private void ButtonLineOnClick(object? sender, RoutedEventArgs e)
+    {
+        State = EnumState.Line;
+    }
     private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
     {
-        // CreateRectangle(new Vector2(1f, 1f), new Vector2(300f, 400f), new List<byte>() {255, 255, 255, 0},
-        //     new List<byte>() {255, 90, 255, 0});
         State = EnumState.Square;
     }
 
     private void ButtonCircleOnClick(object? sender, RoutedEventArgs e)
     {
-        //Ellipse ellipse = new Ellipse();
-        //SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-        //mySolidColorBrush.Color = Color.FromArgb(255, 255, 255, 0);
-        //ellipse.Fill = mySolidColorBrush;
-        //ellipse.StrokeThickness = 2;
-        //ellipse.Stroke = Brushes.Black;
-
-        //ellipse.Width = 100;
-        //ellipse.Height = 50;
-
-        //ThisCanv.Children.Add(ellipse);
+        State = EnumState.Ellipse;
     }
 
     private void ButtonCurvedOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        State = EnumState.Curve;
     }
 
     protected void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -167,9 +151,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             for (int i = 0; i < figureArray.Count; i++)
             {
-                var tmp_selectedFigure = selectedFlagArray[i];
+                var tmpSelectedFigure = selectedFlagArray[i];
                 selectedFlagArray[i] = figureArray[i].IsPointInFigure(currentPoint);
-                if (tmp_selectedFigure != selectedFlagArray[i])
+                if (tmpSelectedFigure != selectedFlagArray[i])
                 {
                     UpdateCanvas();
                 }
@@ -205,18 +189,26 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     protected void OnCanvasPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (IsPressed == true)
+        if (IsPressed)
         {
             secondPoint.X = (float)e.GetCurrentPoint(ThisCanv).Position.X;
             secondPoint.Y = (float)e.GetCurrentPoint(ThisCanv).Position.Y;
 
             IsPressed = false;
-            if (State == EnumState.Square)
+            switch (State)
             {
-                CreateRectangle(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
-                    new List<byte>() { 255, 90, 255, 0 }, true);
-                State = EnumState.Free;
+                case EnumState.Square:
+                    CreateRectangle(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
+                        new List<byte>() { 255, 90, 255, 0 }, true);
+                    State = EnumState.Free;
+                    break;
+                case EnumState.Ellipse:
+                    CreateEllipse(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
+                        new List<byte>() { 255, 90, 255, 0 }, true);
+                    State = EnumState.Free;
+                    break;
             }
+            
         }
 
         for (int i = 0; i < figureArray.Count; i++)
@@ -277,6 +269,17 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         IFigure rectangle = new Rectangle(point1, point2);
         //rectangle.Rotate(300.0f);
+        DrawFigure(rectangle, argb_fill, arbg_stroke, needBoundingBox);
+        figureArray.Add(rectangle);
+        moveFlagArray.Add(false);
+        scaleFlagArray.Add(false);
+        rotateFlagArray.Add(false);
+        selectedFlagArray.Add(false);
+    }
+    
+    public void CreateEllipse(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
+    {
+        IFigure rectangle = new Ellipse(point1, point2);
         DrawFigure(rectangle, argb_fill, arbg_stroke, needBoundingBox);
         figureArray.Add(rectangle);
         moveFlagArray.Add(false);
