@@ -13,6 +13,7 @@
 	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonFilesOnClick">Load</Button>
 	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonToolsOnClick">Save</Button>
         </DockPanel>
+	    <DockPanel Name="ClrDockPanel" Grid.Row="0" Grid.Column="2" ZIndex="1" HorizontalAlignment="Right" VerticalAlignment="Top"> </DockPanel>
 	    <Rectangle Grid.Row="0" Grid.Column="0" Fill="#454545" ZIndex="0"></Rectangle>
 	    <Rectangle Grid.Row="0" Grid.Column="1" Fill="#454545"></Rectangle>
 	    <Rectangle Grid.Row="0" Grid.Column="2" Fill="#454545"></Rectangle>
@@ -40,7 +41,9 @@
 			        <Image Source="icons/curved.png"></Image>
 		        </StackPanel>
 	        </Button>
-        </WrapPanel>
+	    </WrapPanel>
+	    <WrapPanel Name="WP_clrPick" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" ZIndex="1" Orientation="Horizontal" VerticalAlignment="Top" Width="190">
+	    </WrapPanel>
 	    <Canvas x:Name="ThisCanv"
 	            Grid.Row="1"
 	            Grid.ColumnSpan="3"
@@ -50,7 +53,7 @@
 	            PointerReleased="OnCanvasPointerReleased"
 	            Background="White"
 	            PointerMoved="OnCanvasPointerMoved"
-				>
+	    >
 	    </Canvas>
 	    <TextBlock 
 		    Grid.Row="1" 
