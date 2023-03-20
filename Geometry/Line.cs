@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System;
-using IO;
+//using IO;
 
 namespace Geometry 
 {
@@ -14,13 +14,13 @@ namespace Geometry
         private float boundEps = 10;
         public List<byte> ArgbFill { get; set; }
         public List<byte> ArgbStroke { get; set; }
-        public ListFigureSvg ExportData
-        {
-            get
-            {
-                return new ListFigureSvg(_points, "rectangle", ArgbStroke, ArgbFill, true);
-            }
-        }
+        //public ListFigureSvg ExportData
+        //{
+          //  get
+            //{
+              //  return new ListFigureSvg(_points, "rectangle", ArgbStroke, ArgbFill, true);
+            //}
+        //}
 
         public string PathData {
             get {
