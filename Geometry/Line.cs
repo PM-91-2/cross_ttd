@@ -8,9 +8,8 @@ namespace Geometry
     public class Line : IFigure 
     {
         private List<Vector2> _points;
-        private List<Vector2> _bounds;
         private float _angle = 0f;
-        private float boundEps = 10;
+        private float Eps = 10;
 
         public string PathData {
             get {
@@ -19,10 +18,6 @@ namespace Geometry
             }
         }
 
-        public string BoundsData =>
-            string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
-                _bounds[0].X, _bounds[0].Y, _bounds[1].X, _bounds[1].Y,
-                _bounds[3].X, _bounds[3].Y, _bounds[2].X, _bounds[2].Y);
 
         public string InputOutputData => PathData;
 
@@ -35,17 +30,16 @@ namespace Geometry
         }
 
         public bool IsPointOnLine(Vector2 point, float eps) {
-         var Distance ((point1.X-point.X)**2+(point1.Y-point.Y)**2)**0.5+((point2.X-point.X)**2+(point2.Y-point.Y)**2)**0.5-
+         var Distance ((point1.X-point.X)**2+(point1.Y-point.Y)**2)**0.5+
+            ((point2.X-point.X)**2+(point2.Y-point.Y)**2)**0.5-
             ((point1.X-point2.X)**2+(point1.Y-ppint2.Y)**2)**0.5
-            return Distance == 0
+            return Distance <= 2*Eps
         }
 
         public int IsPointNearVerticle(Vector2 point) {
             float eps = 25.0f;  // Радиус взаимодействия с точкой масштабирования
-            if (Vector2.Distance(_bounds[0], point) < eps) return 0;
-            else if (Vector2.Distance(_bounds[1], point) < eps) return 1;
-            else if (Vector2.Distance(_bounds[2], point) < eps) return 2;
-            else if (Vector2.Distance(_bounds[3], point) < eps) return 3;
+            if (Vector2.Distance(_points[0], point) < eps) return 0;
+            else if (Vector2.Distance(_points[1], point) < eps) return 1;
             else return -1;
         }
 
@@ -57,9 +51,6 @@ namespace Geometry
             for (int i = 0; i < _points.Count; i++)
                 _points[i] = new Vector2(_points[i].X + moveVector.X, _points[i].Y + moveVector.Y);
 
-                // Обновление точек рамки
-            for (int i = 0; i < _bounds.Count; i++)
-                _bounds[i] = new Vector2(_bounds[i].X + moveVector.X, _bounds[i].Y + moveVector.Y);
         }
         }
         public void Rotate(float angle) {
@@ -79,28 +70,15 @@ namespace Geometry
                 _points[i] = new Vector2(
                     rotateMatrix[0].X * _points[i].X + rotateMatrix[0].Y * _points[i].Y,
                     rotateMatrix[1].X * _points[i].X + rotateMatrix[1].Y * _points[i].Y);
-            for (int i = 0; i < 4; i++) _points[i] += center;  // Перенос в прежнее место
+            for (int i = 0; i < 2; i++) _points[i] += center;  // Перенос в прежнее место
 
-            // Вспомогательные массивы для обновления рамки
-            float x1 = new float[] { _points[0].X, _points[1].X, _points[2].X, _points[3].X }.Min();
-            float x2 = new float[] { _points[0].X, _points[1].X, _points[2].X, _points[3].X }.Max();
-            float y1 = new float[] { _points[0].Y, _points[1].Y, _points[2].Y, _points[3].Y }.Min();
-            float y2 = new float[] { _points[0].Y, _points[1].Y, _points[2].Y, _points[3].Y }.Max();
-
-            // Пересчет точек рамки
-            _bounds[0] = new Vector2(x1 - boundEps, y2 + boundEps);
-            _bounds[1] = new Vector2(x1 - boundEps, y1 - boundEps);
-            _bounds[2] = new Vector2(x2 + boundEps, y2 + boundEps);
-            _bounds[3] = new Vector2(x2 + boundEps, y1 - boundEps);
         }
         
-
-        public void Scale(float scaleX, float scaleY) {
-            Vector2 center = new Vector2((point1.X+point2.X)/2, (point1.Y+point2.Y)/2);
-
-            for (int i = 0; i < 2; i++) _points[i] -= center;
-            for (int i = 0; i < 2; i++) _points[i] = new Vector2(_points[i].X * scaleX, _points[i].Y * scaleY);
-            for (int i = 0; i < 2; i++) _points[i] += center;
+        public void Scale(Vector2 startPosition, Vector2 newPosition) {
+           if ((startPosition.X - _points[0].X) <= Eps) 
+           _points[0] = newPosition;
+           else if ((startPosition.X - _points[1].X) <= Eps)
+           _points[1] = newPosition;
         }
     }
 }
