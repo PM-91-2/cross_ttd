@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using IO;
 
 namespace Geometry {
     public class BezierCurve : IFigure {
@@ -9,15 +10,20 @@ namespace Geometry {
         private List<Vector2> _points;
         private List<Vector2> _bounds;
         private Vector2 _position;
-
+        public List<byte> ArgbFill { get; set; }
+        public List<byte> ArgbStroke { get; set; }
         public string PathData =>
             String.Format("M {0},{1} C {2},{3} {4},{5} {6},{7}",
                 _points[0].X, _points[0].Y, _points[1].X, _points[1].Y,
                 _points[2].X, _points[2].Y, _points[3].X, _points[3].Y);
 
-        public string InputOutputData =>
-            String.Format("Name: {0} Start_point: {1} Control_point1: {2} Control_point2: {3} End_point: {4}", NAME, _points[0], _points[1], _points[2],
-                _points[3]);
+        public ListFigureSvg ExportData
+        {
+            get
+            {
+                return new ListFigureSvg(_points, "name", ArgbFill, ArgbStroke);
+            }
+        }
 
         public string BoundsData => string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
             _bounds[0].X, _bounds[0].Y, _bounds[1].X, _bounds[1].Y,
