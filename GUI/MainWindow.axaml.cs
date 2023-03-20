@@ -241,19 +241,24 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                         BezierFlagsArray[3] = true;
                         BezierPoints.Add(secondPoint);
                     }
-                    //todo: Насрать жестко (Done.)
+
                     foreach (bool point in BezierFlagsArray) {
                         if (!point) {
                             return;
                         }
                     }
+
                     CreateBezierCurveFromTool(BezierPoints[0], BezierPoints[2], BezierPoints[3], BezierPoints[1], new List<byte>() { 0, 0, 0, 0 },
                         new List<byte>() { 255, 90, 255, 0 }, true);
+
                     State = EnumState.Free;
+
                     for (int i = 0; i < BezierFlagsArray.Count(); i++) {
                         BezierFlagsArray[i] = false;
                     }
+
                     BezierPoints.Clear();
+
                     break;
             }
             
