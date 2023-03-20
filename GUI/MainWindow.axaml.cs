@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Avalonia;
@@ -28,7 +30,7 @@ enum EnumState
     Copy
 }
 
-public partial class MainWindow : Window
+public partial class MainWindow : Window, INotifyPropertyChanged
 {
     public List<IFigure> figureArray = new List<IFigure>();
     // public ObservableCollection<Geometry.IFigure> Figures = new ObservableCollection<IFigure>();
@@ -39,6 +41,8 @@ public partial class MainWindow : Window
     private List<bool> scaleFlagArray = new List<bool>();
     private List<bool> rotateFlagArray = new List<bool>();
     private List<bool> selectedFlagArray = new List<bool>();
+    private List<bool> BezierFlagsArray = new List<bool>(){false, false, false,false};
+    private List<Vector2> BezierPoints = new List<Vector2>();
 
     private int _pointflag = -1;
 
@@ -137,12 +141,11 @@ public partial class MainWindow : Window
             ThisCanv.Children.Add(grid);
         }
     }
-    
+
     private void ButtonLineOnClick(object? sender, RoutedEventArgs e)
     {
         State = EnumState.Line;
     }
-
     private void ButtonSquareOnClick(object? sender, RoutedEventArgs e)
     {
         State = EnumState.Square;
@@ -166,7 +169,17 @@ public partial class MainWindow : Window
             (float)e.GetCurrentPoint(ThisCanv).Position.Y);
 
         firstPoint = currentPoint;
-        if (State is EnumState.Free or EnumState.Select)
+        if (State == EnumState.Curve) {
+            if (!BezierFlagsArray[0]) {
+                BezierFlagsArray[0] = true;
+                BezierPoints.Add(firstPoint);
+            } else if (BezierFlagsArray[1]) {
+                BezierFlagsArray[2] = true;
+                BezierPoints.Add(firstPoint);
+            }
+        }
+
+        if (State == EnumState.Free)
         {
             for (int i = 0; i < figureArray.Count; i++)
             {
@@ -225,9 +238,37 @@ public partial class MainWindow : Window
                 case EnumState.Ellipse:
                     CreateEllipse(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
                         new List<byte>() { 255, 90, 255, 0 }, true);
+                         State = EnumState.Free;
+                    break;
+                case EnumState.Curve:
+                    if (BezierFlagsArray[0] && !BezierFlagsArray[1]) {
+                        BezierFlagsArray[1] = true;
+                        BezierPoints.Add(secondPoint);
+                    } else if (BezierFlagsArray[2] && !BezierFlagsArray[3]) {
+                        BezierFlagsArray[3] = true;
+                        BezierPoints.Add(secondPoint);
+                    }
+
+                    foreach (bool point in BezierFlagsArray) {
+                        if (!point) {
+                            return;
+                        }
+                    }
+
+                    CreateBezierCurveFromTool(BezierPoints[0], BezierPoints[2], BezierPoints[3], BezierPoints[1], new List<byte>() { 0, 0, 0, 0 },
+                        new List<byte>() { 255, 90, 255, 0 }, true);
+
                     State = EnumState.Free;
+
+                    for (int i = 0; i < BezierFlagsArray.Count(); i++) {
+                        BezierFlagsArray[i] = false;
+                    }
+
+                    BezierPoints.Clear();
+
                     break;
             }
+            
         }
 
         for (int i = 0; i < figureArray.Count; i++)
@@ -313,11 +354,20 @@ public partial class MainWindow : Window
         selectedFlagArray.Add(false);
     }
     
+    public void CreateBezierCurveFromTool(Vector2 point1, Vector2 point2, Vector2 point3, Vector2 point4, List<byte> argb_fill, List<byte> argb_stroke, Boolean needBoundingBox) {
+        IFigure rectangle = new BezierCurve(point1, point2, point3, point4, argb_fill, argb_stroke);
+        DrawFigure(rectangle, argb_fill, argb_stroke, needBoundingBox);
+        figureArray.Add(rectangle);
+        moveFlagArray.Add(false);
+        scaleFlagArray.Add(false);
+        rotateFlagArray.Add(false);
+        selectedFlagArray.Add(false);
+    }
+    
     private void UpdateCanvas()
     {
         ThisCanv.Children.Clear();
         DrawAll();
-        Console.WriteLine(State);
     }
 
     private void UpdateFigure(int index)
