@@ -24,7 +24,8 @@ enum EnumState
     Ellipse,
     Curve,
     Free,
-    Select
+    Select,
+    Copy
 }
 
 public partial class MainWindow : Window
@@ -108,7 +109,6 @@ public partial class MainWindow : Window
         var pathBounds = new Path();
         if (needBoundingBox)
         {
-            var tmpbounds = figure.BoundsData;
             pathBounds.Data = Avalonia.Media.Geometry.Parse(figure.BoundsData);
             SolidColorBrush mySolidColorBrushBounds = new SolidColorBrush();
             mySolidColorBrushBounds.Color = Color.FromArgb(255, 0, 0, 0);
@@ -312,6 +312,7 @@ public partial class MainWindow : Window
     {
         ThisCanv.Children.Clear();
         DrawAll();
+        Console.WriteLine(State);
     }
 
     private void UpdateFigure(int index)
@@ -337,13 +338,6 @@ public partial class MainWindow : Window
 
     private void CopyFigure(int index)
     {
-        List<Path> pathFigure = DrawFigure(figureArray[index], new List<byte>() { 255, 255, 255, 0 },
-            new List<byte>() { 255, 90, 255, 0 }, selectedFlagArray[index]);
-        // Path pathFigureBounds = DrawBounds(figureArray[i]);
-        Grid grid = new Grid();
-        grid.Children.Add(pathFigure[0]);
-        grid.Children.Add(pathFigure[1]);
-        ThisCanv.Children.Add(grid);
     }
     private void KeyEvents(object? sender, KeyEventArgs e)
     {
@@ -365,8 +359,25 @@ public partial class MainWindow : Window
                     UpdateCanvas();
                 } else if ((e.KeyModifiers is KeyModifiers.Control && e.Key is Key.C && indexSelectedFigure != -1))
                 {
+                    State = EnumState.Copy;
                     CopyFigure(indexSelectedFigure);
-                    UpdateCanvas();
+                }
+                break;
+            }
+            case EnumState.Copy:
+            {
+                var indexSelectedFigure = -1;
+                for (int i = 0; i < figureArray.Count; i++)
+                {
+                    if (selectedFlagArray[i])
+                    {
+                        indexSelectedFigure = i;
+                    }
+                }
+
+                if ((e.KeyModifiers is KeyModifiers.Control && e.Key is Key.V && indexSelectedFigure != -1))
+                {
+                    break;
                 }
                 break;
             }
