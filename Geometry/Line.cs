@@ -20,7 +20,7 @@ namespace Geometry
         }
 
         public string BoundsData =>
-            string.Format("M {0},{1} L {2},{3}",
+            string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
             _bounds[0].X, _bounds[0].Y, _bounds[1].X, _bounds[1].Y,
             _bounds[3].X, _bounds[3].Y, _bounds[2].X, _bounds[2].Y);
         public string InputOutputData => PathData;
