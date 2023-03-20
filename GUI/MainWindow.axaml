@@ -11,8 +11,8 @@
         <DockPanel ZIndex="0"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top">
-	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonFilesOnClick">Save</Button>
-	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonToolsOnClick">Load</Button>
+	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonFilesOnClick">Load</Button>
+	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonToolsOnClick">Save</Button>
         </DockPanel>
 	    <Rectangle Grid.Row="0" Grid.Column="0" Fill="#454545" ZIndex="0"></Rectangle>
 	    <Rectangle Grid.Row="0" Grid.Column="1" Fill="#454545"></Rectangle>
