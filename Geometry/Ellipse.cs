@@ -22,7 +22,7 @@ namespace Geometry
         {
             get
             {
-                return new ListFigureSvg(_points, "rectangle", ArgbStroke, ArgbFill, true);
+                return new ListFigureSvg(x_radius,y_radius,_points_ellipse, "ellipse", ArgbStroke, ArgbFill, _angle);
             }
         }
         public string PathData
@@ -72,7 +72,26 @@ namespace Geometry
             ArgbFill = argb_fill;
             ArgbStroke = argb_stroke;
         }
-
+        public Ellipse(List<Vector2> points, List<byte> argb_fill, List<byte> argb_stroke,float rx,float ry, float angle)
+        {
+            {
+                float radiusX = Vector2.Distance(points[0], points[1])/2;
+                float radiusY = radiusX / rx - radiusX;
+                _angle = angle;
+                _points = new List<Vector2>
+                {
+                    new Vector2(points[1].X, points[1].Y + radiusY),
+                    new Vector2(points[1].X, points[1].Y - radiusY),
+                    new Vector2(points[0].X, points[0].Y + radiusY),
+                    new Vector2(points[0].X, points[0].Y - radiusY)
+                };
+            }
+            // Порядок точек: левая нижняя, левая верхняя, правая нижняя, правая верхняя
+            SortPoints();
+ 
+            ArgbFill = argb_fill;
+            ArgbStroke = argb_stroke;
+        }
         public bool IsPointInFigure(Vector2 point)
         {
             var point1 = GeometryUtils.RectangleSideProduct(point, _points[0], _points[1]);

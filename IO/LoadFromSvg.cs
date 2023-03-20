@@ -1,17 +1,17 @@
 ﻿using System.Numerics;
-
+ 
 namespace IO;
-
+ 
 public class ListFigureSvg
 {
     public string name;
-    public float r1_ellipse;
-    public float r2_ellipse;
+    public float x_radius;
+    public float y_radius;
     public List<byte> stroke;
     public List<byte> fill;
-    public Vector2 P_ellipse;
     public List<Vector2> points;
-    
+    public float angle;
+ 
     // for rectangle
     public ListFigureSvg(List<Vector2> point, string id, List<byte> color_stroke, List<byte> color_fill,bool flag)
     {
@@ -21,14 +21,15 @@ public class ListFigureSvg
         name = id; 
     }
     // for ellipse
-    public ListFigureSvg(float rx, float ry, Vector2 P, string id, List<byte> color_stroke, List<byte> color_fill)
+    public ListFigureSvg(float rx, float ry, List<Vector2> P, string id, List<byte> color_stroke, List<byte> color_fill, float angl)
     {
-        r1_ellipse = rx;
-        r2_ellipse = ry;
-        P_ellipse = P;
+        x_radius = rx;
+        y_radius = ry;
+        points = P;
         stroke = color_stroke;
         fill = color_fill;
-        name = id; 
+        name = id;
+        angle = angl;
     }
     // for line
     public ListFigureSvg(List<Vector2> point, string id, List<byte> color_stroke, List<byte> color_fill)
@@ -38,7 +39,7 @@ public class ListFigureSvg
         fill = color_fill;
         name = id; 
     }
-    
+ 
     // for bezie
     public ListFigureSvg(List<Vector2> point, string id, List<byte> color_stroke, List<byte> color_fill,int a)
     {
