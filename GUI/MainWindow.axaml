@@ -5,7 +5,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CrossTTD.MainWindow"
         x:Name="CrossTtd"
-        Title="GUI">
+        Title="GUI"
+        KeyDown="KeyEvents">
     <Grid Margin="3" RowDefinitions="30,*" ColumnDefinitions="*, *, *" ZIndex="0">
         <DockPanel ZIndex="0"
                    HorizontalAlignment="Left"
@@ -48,8 +49,6 @@
 	            PointerReleased="OnCanvasPointerReleased"
 	            Background="White"
 	            PointerMoved="OnCanvasPointerMoved"
-	            KeyDown="KeyEvents"
-	            KeyUp="KeyEvents"
 	    >
 	    </Canvas>
 	    <TextBlock 
