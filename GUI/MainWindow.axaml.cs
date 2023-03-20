@@ -81,6 +81,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 case "rectangle":
                     CreateRectangleFromImport(attr.points[0], attr.points[1], attr.points[2], attr.points[3],
                     attr.fill, attr.stroke, true); break;
+                case  "line":
+                    CreateLine(attr.points[0], attr.points[1], attr.fill, attr.stroke, true);
+                    break;
+                case  "bezie":
+                    CreateBezierCurveFromTool(attr.points[0], attr.points[1],attr.points[2],attr.points[3], attr.fill, attr.stroke, true);
+                    break;
             }
         }
     }

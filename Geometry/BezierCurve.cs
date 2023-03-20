@@ -19,7 +19,7 @@ namespace Geometry {
                 _points[0].X, _points[0].Y, _points[1].X, _points[1].Y,
                 _points[2].X, _points[2].Y, _points[3].X, _points[3].Y);
 
-        public ListFigureSvg ExportData => new ListFigureSvg(_points, "Curve", ArgbFill, ArgbStroke);
+        public ListFigureSvg ExportData => new ListFigureSvg(_points, "bezie",ArgbStroke , ArgbFill,1);
 
         public string BoundsData => string.Format("M {0},{1} L {2},{3} {4},{5} {6},{7} Z",
             _bounds[0].X, _bounds[0].Y, _bounds[1].X, _bounds[1].Y,
