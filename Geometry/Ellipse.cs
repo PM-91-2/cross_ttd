@@ -33,12 +33,12 @@ namespace Geometry
                 //переходим от прямоугольника к эллипсу
                 // лево-низ-право-верх
                 _points_ellipse = new List<Vector2>{
-                    new Vector2(_points[0].X, (_points[1].Y + _points[0].Y) / 2),
-                    new Vector2((_points[2].X + _points[0].X) / 2, _points[0].Y),
-                    new Vector2(_points[2].X, (_points[3].Y + _points[2].Y) / 2),
-                    new Vector2((_points[2].X + _points[0].X) / 2, _points[3].Y)};
-                x_radius = Math.Abs(_points_ellipse[2].X - _points_ellipse[0].X);
-                y_radius = Math.Abs(_points_ellipse[1].Y - _points_ellipse[3].Y);
+                    new Vector2((_points[1].X + _points[0].X)/2, (_points[1].Y + _points[0].Y)/2),
+                    new Vector2((_points[2].X + _points[0].X)/2, (_points[2].Y + _points[0].Y)/2),
+                    new Vector2((_points[3].X + _points[2].X)/2, (_points[3].Y + _points[2].Y)/2),
+                    new Vector2((_points[1].X + _points[3].X)/2, (_points[1].Y + _points[3].Y)/2)};
+                x_radius = Vector2.Distance(_points_ellipse[2], _points_ellipse[0]);
+                y_radius = Vector2.Distance(_points_ellipse[1], _points_ellipse[3]);
 
                 return string.Format("M {0},{1} A {2},{3} {4} {5} {6} {7},{8} " +
                     "                           A {9},{10} {11} {12} {13} {14},{15} Z",
