@@ -271,7 +271,7 @@ namespace IO {
 
             if (points.Count != 0)
             {
-                ListFigureSvg figure = new ListFigureSvg(points,name, path_stroke, path_fill);
+                figure = new ListFigureSvg(points,name, path_stroke, path_fill);
                 this.figure_attributes.Add(figure);
             }
  

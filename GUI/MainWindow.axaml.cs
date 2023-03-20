@@ -89,7 +89,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     scaleFlagArray.Add(false);
                     rotateFlagArray.Add(false);
                     selectedFlagArray.Add(false);
-                case  "line":
+                    break;
+                case "line":
                     CreateLine(attr.points[0], attr.points[1], attr.fill, attr.stroke, true);
                     break;
                 case  "bezie":
