@@ -10,7 +10,7 @@ namespace Geometry
         private List<Vector2> _points;
         private List<Vector2> _bounds;
         private float _angle = 0f;
-        private float boundEps = 10;
+        private float boundEps = 25;
 
         public string PathData {
             get {
@@ -30,13 +30,21 @@ namespace Geometry
                 point1,
                 point2
             };
-
+            
+            float min_x = new float [] { point1.X, point2.X }.Min() - boundEps;
+            float max_x = new float [] { point1.X, point2.X }.Max() + boundEps;
+            float min_y = new float[] { point1.Y, point2.Y }.Min() - boundEps;
+            float max_y = new float[] { point1.Y, point2.Y }.Max() + boundEps;
+            _bounds = new List<Vector2>
+            {
+                new Vector2(min_x, max_y), new Vector2(min_x, min_y), new Vector2(max_x, max_y), new Vector2(max_x, min_y)
+            };
         }
 
         public bool IsPointInFigure(Vector2 point) {
-            var Distance1 = Math.Pow((Math.Pow((_points[0].X-point.X),2)+Math.Pow((_points[0].Y-point.Y),2)),0.5);
-            var Distance2 = Math.Pow((Math.Pow((_points[1].X-point.X),2)+Math.Pow((_points[1].Y-point.Y),2)),0.5);
-            var Distance3 = Math.Pow((Math.Pow((_points[0].X-_points[1].X),2)+Math.Pow((_points[0].Y-_points[1].Y),2)),0.5);
+            var Distance1 = Vector2.Distance(_points[0],point);
+            var Distance2 = Vector2.Distance(_points[1],point);
+            var Distance3 = Vector2.Distance(_points[0],_points[1]);
             var Difference = Distance1 + Distance2 - Distance3;
             return Difference <= 2*boundEps;
         }
