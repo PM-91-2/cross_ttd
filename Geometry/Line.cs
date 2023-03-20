@@ -8,6 +8,7 @@ namespace Geometry
     public class Line : IFigure 
     {
         private List<Vector2> _points;
+        private List<Vector2> _bounds;
         private float _angle = 0f;
         private float Eps = 10;
 
@@ -19,7 +20,8 @@ namespace Geometry
         }
 
         public string BoundsData =>
-            string.Format("M {0},{1} L {2},{3}");
+            string.Format("M {0},{1} L {2},{3}",
+            _bounds[0].X, _bounds[0].Y, _bounds[1].X, _bounds[1].Y);
         public string InputOutputData => PathData;
 
         public Line(Vector2 point1, Vector2 point2) {
