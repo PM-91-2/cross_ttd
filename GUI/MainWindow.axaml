@@ -48,7 +48,8 @@
 	            PointerReleased="OnCanvasPointerReleased"
 	            Background="White"
 	            PointerMoved="OnCanvasPointerMoved"
-	            KeyDown="KeyBindings"
+	            KeyDown="KeyEvents"
+	            KeyUp="KeyEvents"
 	    >
 	    </Canvas>
 	    <TextBlock 

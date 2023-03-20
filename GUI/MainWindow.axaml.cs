@@ -305,6 +305,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void DeleteFigure(int index)
     {
+        ThisCanv.Children.RemoveAt(index);
         figureArray.RemoveAt(index);
         moveFlagArray.RemoveAt(index);
         scaleFlagArray.RemoveAt(index);
@@ -312,7 +313,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         selectedFlagArray.RemoveAt(index);
     }
 
-    private new void KeyBindings(object? sender, KeyEventArgs e)
+    private void KeyEvents(object? sender, KeyEventArgs e)
     {
         switch (State)
         {
