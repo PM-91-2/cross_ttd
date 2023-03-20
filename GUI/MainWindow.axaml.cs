@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
@@ -119,6 +120,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             SolidColorBrush mySolidColorBrushBounds = new SolidColorBrush();
             mySolidColorBrushBounds.Color = Color.FromArgb(255, 0, 0, 0);
             pathBounds.Stroke = mySolidColorBrushBounds;
+            pathBounds.StrokeDashArray = new AvaloniaList<double>(4, 2, 4);
             pathBounds.StrokeThickness = 2;
         }
 
