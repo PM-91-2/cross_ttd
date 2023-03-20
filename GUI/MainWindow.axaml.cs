@@ -107,6 +107,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             pathBounds.Stroke = mySolidColorBrushBounds;
             pathBounds.StrokeDashArray = new AvaloniaList<double>(4, 2, 4);
             pathBounds.StrokeThickness = 2;
+            pathBounds.StrokeDashArray = new AvaloniaList<double>(4, 4);
         }
 
         return new List<Path>() { pathFigure, pathBounds };
@@ -313,6 +314,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         selectedFlagArray.RemoveAt(index);
     }
 
+    private void CopyFigure(int index)
+    {
+        List<Path> pathFigure = DrawFigure(figureArray[index], new List<byte>() { 255, 255, 255, 0 },
+            new List<byte>() { 255, 90, 255, 0 }, selectedFlagArray[index]);
+        // Path pathFigureBounds = DrawBounds(figureArray[i]);
+        Grid grid = new Grid();
+        grid.Children.Add(pathFigure[0]);
+        grid.Children.Add(pathFigure[1]);
+        ThisCanv.Children.Add(grid);
+    }
     private void KeyEvents(object? sender, KeyEventArgs e)
     {
         switch (State)
@@ -330,6 +341,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 if (e.Key is Key.Delete && indexSelectedFigure != -1)
                 {
                     DeleteFigure(indexSelectedFigure);
+                    UpdateCanvas();
+                } else if ((e.KeyModifiers is KeyModifiers.Control && e.Key is Key.C && indexSelectedFigure != -1))
+                {
+                    CopyFigure(indexSelectedFigure);
                     UpdateCanvas();
                 }
                 break;
