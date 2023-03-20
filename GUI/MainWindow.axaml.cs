@@ -12,6 +12,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Geometry;
 using Rectangle = Geometry.Rectangle;
+using Ellipse = Geometry.Ellipse;
 
 namespace CrossTTD;
 
@@ -130,19 +131,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         State = EnumState.Square;
     }
 
+    public void CreateEllipse(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> arbg_stroke)
+    {
+        IFigure ellipse = new Ellipse(point1, point2);
+        DrawFigure(ellipse, argb_fill, arbg_stroke);
+        figureArray.Add(ellipse);
+        moveFlagArray.Add(false);
+        scaleFlagArray.Add(false);
+        rotateFlagArray.Add(false);
+    }
     private void ButtonCircleOnClick(object? sender, RoutedEventArgs e)
     {
-        Ellipse ellipse = new Ellipse();
-        SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-        mySolidColorBrush.Color = Color.FromArgb(255, 255, 255, 0);
-        ellipse.Fill = mySolidColorBrush;
-        ellipse.StrokeThickness = 2;
-        ellipse.Stroke = Brushes.Black;
-
-        ellipse.Width = 100;
-        ellipse.Height = 50;
-
-        ThisCanv.Children.Add(ellipse);
+        CreateEllipse(new Vector2(100, 100), new Vector2(300, 200), new List<byte>() { 255, 255, 255, 0 },
+                    new List<byte>() { 255, 90, 255, 0 });
     }
 
     private void ButtonCurvedOnClick(object? sender, RoutedEventArgs e)

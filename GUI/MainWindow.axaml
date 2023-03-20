@@ -50,6 +50,9 @@
 	            PointerMoved="OnCanvasPointerMoved"
 				>
 	    </Canvas>
+      <Path Stroke="black" Data="M 10,10 A 2,2 0 0 0 20,10">
+        
+      </Path>
 	    <TextBlock 
 		    Grid.Row="1" 
 		    Grid.Column="0" 
