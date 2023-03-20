@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
@@ -12,8 +14,10 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Geometry;
 using IO;
+
 using Rectangle = Geometry.Rectangle;
 using Ellipse = Geometry.Ellipse;
+using Line = Geometry.Line;
 
 namespace CrossTTD;
 
@@ -37,6 +41,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private List<bool> scaleFlagArray = new List<bool>();
     private List<bool> rotateFlagArray = new List<bool>();
     private List<bool> selectedFlagArray = new List<bool>();
+    private List<bool> BezierFlagsArray = new List<bool>(){false, false, false,false};
+    private List<Vector2> BezierPoints = new List<Vector2>();
 
     private int _pointflag = -1;
 
@@ -45,6 +51,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private EnumState State = EnumState.Free;
 
     private Point initialRotatingPoint = new Point();
+    private double previousRotationDegree = 0;
 
     private bool IsPressed = false;
 
@@ -82,6 +89,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     scaleFlagArray.Add(false);
                     rotateFlagArray.Add(false);
                     selectedFlagArray.Add(false);
+                case  "line":
+                    CreateLine(attr.points[0], attr.points[1], attr.fill, attr.stroke, true);
+                    break;
+                case  "bezie":
+                    CreateBezierCurveFromTool(attr.points[0], attr.points[1],attr.points[2],attr.points[3], attr.fill, attr.stroke, true);
                     break;
             }
         }
@@ -96,8 +108,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         IO.Svg svgObj = new IO.Svg();
         svgObj.SaveToSVG(exportArray);
     }
-
-  
 
     private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
     {
@@ -125,6 +135,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             SolidColorBrush mySolidColorBrushBounds = new SolidColorBrush();
             mySolidColorBrushBounds.Color = Color.FromArgb(255, 0, 0, 0);
             pathBounds.Stroke = mySolidColorBrushBounds;
+            pathBounds.StrokeDashArray = new AvaloniaList<double>(4, 2, 4);
             pathBounds.StrokeThickness = 2;
         }
 
@@ -171,42 +182,60 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             (float)e.GetCurrentPoint(ThisCanv).Position.Y);
 
         firstPoint = currentPoint;
-        if (State == EnumState.Free)
+        switch (State)
         {
-            for (int i = 0; i < figureArray.Count; i++)
+            case EnumState.Curve when !BezierFlagsArray[0]:
+                BezierFlagsArray[0] = true;
+                BezierPoints.Add(firstPoint);
+                break;
+            case EnumState.Curve:
             {
-                var tmpSelectedFigure = selectedFlagArray[i];
-                selectedFlagArray[i] = figureArray[i].IsPointInFigure(currentPoint);
-                if (tmpSelectedFigure != selectedFlagArray[i])
-                {
-                    UpdateCanvas();
+                if (BezierFlagsArray[1]) {
+                    BezierFlagsArray[2] = true;
+                    BezierPoints.Add(firstPoint);
                 }
+
+                break;
             }
-            
-            for (int i = 0; i < figureArray.Count; i++)
+            case EnumState.Free:
             {
-                _pointflag = figureArray[i].IsPointNearVerticle(currentPoint);
-
-                if (e.KeyModifiers == KeyModifiers.Control && _pointflag != -1)
+                for (int i = 0; i < figureArray.Count; i++)
                 {
-                    rotateFlagArray[i] = true;
-                    initialRotatingPoint = e.GetCurrentPoint(ThisCanv).Position;
-                    break;
+                    var tmpSelectedFigure = selectedFlagArray[i];
+                    selectedFlagArray[i] = figureArray[i].IsPointInFigure(currentPoint);
+                    if (tmpSelectedFigure != selectedFlagArray[i])
+                    {
+                        UpdateCanvas();
+                    }
+                }
+            
+                for (int i = 0; i < figureArray.Count; i++)
+                {
+                    _pointflag = figureArray[i].IsPointNearVerticle(currentPoint);
+
+                    if (e.KeyModifiers == KeyModifiers.Control && _pointflag != -1)
+                    {
+                        rotateFlagArray[i] = true;
+                        initialRotatingPoint = e.GetCurrentPoint(ThisCanv).Position;
+                        break;
+                    }
+
+                    else if (_pointflag != -1)
+                    {
+                        moveSavePoint = e.GetCurrentPoint(ThisCanv);
+                        scaleFlagArray[i] = true;
+                        break;
+                    }
+
+                    else if (figureArray[i].IsPointInFigure(currentPoint))
+                    {
+                        moveSavePoint = e.GetCurrentPoint(ThisCanv);
+                        moveFlagArray[i] = true;
+                        break;
+                    }
                 }
 
-                else if (_pointflag != -1)
-                {
-                    moveSavePoint = e.GetCurrentPoint(ThisCanv);
-                    scaleFlagArray[i] = true;
-                    break;
-                }
-
-                else if (figureArray[i].IsPointInFigure(currentPoint))
-                {
-                    moveSavePoint = e.GetCurrentPoint(ThisCanv);
-                    moveFlagArray[i] = true;
-                    break;
-                }
+                break;
             }
         }
     }
@@ -229,6 +258,38 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 case EnumState.Ellipse:
                     CreateEllipse(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
                         new List<byte>() { 255, 90, 255, 0 }, true);
+                         State = EnumState.Free;
+                    break;
+                case EnumState.Curve:
+                    if (BezierFlagsArray[0] && !BezierFlagsArray[1]) {
+                        BezierFlagsArray[1] = true;
+                        BezierPoints.Add(secondPoint);
+                    } else if (BezierFlagsArray[2] && !BezierFlagsArray[3]) {
+                        BezierFlagsArray[3] = true;
+                        BezierPoints.Add(secondPoint);
+                    }
+
+                    foreach (bool point in BezierFlagsArray) {
+                        if (!point) {
+                            return;
+                        }
+                    }
+
+                    CreateBezierCurveFromTool(BezierPoints[0], BezierPoints[2], BezierPoints[3], BezierPoints[1], new List<byte>() { 0, 0, 0, 0 },
+                        new List<byte>() { 255, 90, 255, 0 }, true);
+
+                    State = EnumState.Free;
+
+                    for (int i = 0; i < BezierFlagsArray.Count(); i++) {
+                        BezierFlagsArray[i] = false;
+                    }
+
+                    BezierPoints.Clear();
+
+                    break;
+                case EnumState.Line:
+                    CreateLine(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
+                        new List<byte>() { 255, 90, 255, 0 }, true);
                     State = EnumState.Free;
                     break;
             }
@@ -242,6 +303,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             if (rotateFlagArray[i]) rotateFlagArray[i] = false;
         }
     }
+    
 
     protected void OnCanvasPointerMoved(object? sender, PointerEventArgs e)
     {
@@ -271,21 +333,59 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
             if (rotateFlagArray[i])
             {
-                var somePoint = e.GetPosition(ThisCanv);
-                var rotateAngle = 1;
+                var angle = 2;
+                var dragPoint = e.GetPosition(ThisCanv);
 
-                if (somePoint.Y - initialRotatingPoint.Y < 0)
+                Vector2 center = new Vector2(
+                    (secondPoint.X - firstPoint.X) / 2,
+                    (secondPoint.Y - firstPoint.Y) / 2
+                );
+
+                var rotationAngle = GetRotationAngle(
+                    GetPointWithNewCenter(center, initialRotatingPoint), 
+                    GetPointWithNewCenter(center, dragPoint)
+                    );
+
+                if (rotationAngle < previousRotationDegree)
                 {
-                    rotateAngle = -1;
+                    angle = -angle;
                 }
-
-                figureArray[i].Rotate(rotateAngle);
+                
+                figureArray[i].Rotate(angle);
                 DrawFigure(figureArray[i], figureArray[i].ArgbFill, figureArray[i].ArgbStroke, selectedFlagArray[i]);
-                initialRotatingPoint = somePoint;
+                
+                previousRotationDegree = rotationAngle;
             }
         }
     }
+    
+    private static double GetRotationAngle(Point initialPoint, Point dragPoint)
+    {
+        double x1 = initialPoint.X, y1 = initialPoint.Y;
+        double x2 = dragPoint.X, y2 = dragPoint.Y;
+        double A = Math.Atan2(y1 - y2, x1 - x2) / Math.PI * 180;
 
+        return (A < 0) ? A + 360 : A;
+    }
+
+    private static Point GetPointWithNewCenter(Vector2 center, Point point)
+    {
+        return new Point(
+                center.X - point.X,
+                center.Y - point.Y
+            );
+    }
+
+    private void CreateLine(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke, Boolean needBoundingBox)
+    {
+        IFigure line = new Line(point1, point2, argb_fill, argb_stroke);
+        DrawFigure(line, argb_fill, argb_stroke, needBoundingBox);
+        figureArray.Add(line);
+        moveFlagArray.Add(false);
+        scaleFlagArray.Add(false);
+        rotateFlagArray.Add(false);
+        selectedFlagArray.Add(false);
+    }
     public void CreateRectangleFromTool(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke, Boolean needBoundingBox)
     {
         IFigure rectangle = new Rectangle(point1, point2, argb_fill, argb_stroke);
@@ -310,6 +410,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public void CreateEllipse(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke, Boolean needBoundingBox)
     {
         IFigure rectangle = new Ellipse(point1, point2, argb_fill, argb_stroke);
+        DrawFigure(rectangle, argb_fill, argb_stroke, needBoundingBox);
+        figureArray.Add(rectangle);
+        moveFlagArray.Add(false);
+        scaleFlagArray.Add(false);
+        rotateFlagArray.Add(false);
+        selectedFlagArray.Add(false);
+    }
+    
+    public void CreateBezierCurveFromTool(Vector2 point1, Vector2 point2, Vector2 point3, Vector2 point4, List<byte> argb_fill, List<byte> argb_stroke, Boolean needBoundingBox) {
+        IFigure rectangle = new BezierCurve(point1, point2, point3, point4, argb_fill, argb_stroke);
         DrawFigure(rectangle, argb_fill, argb_stroke, needBoundingBox);
         figureArray.Add(rectangle);
         moveFlagArray.Add(false);

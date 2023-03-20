@@ -175,7 +175,7 @@ namespace IO {
                 path_fill = new List<byte>() { 255, 255, 255, 255 };
             }
             //line and bezie
-            if (svgPath.PathData.Count == 3)
+            if (svgPath.PathData.Count == 2)
             {
                 //bezie
                 if ( svgPath.PathData[1] is SvgCubicCurveSegment)
@@ -192,6 +192,9 @@ namespace IO {
                     }
                 }
                 //line
+            }
+            if (svgPath.PathData.Count == 3)
+            {
                 if (svgPath.PathData[1] is SvgLineSegment)
                 {
                     SvgLineSegment line = (SvgLineSegment)svgPath.PathData[1];
@@ -248,7 +251,27 @@ namespace IO {
  
             if (figure !=null)
             {
- 
+                var svgColourStroke = ((SvgColourServer)svgPath.Stroke).Colour;
+                path_stroke = new List<byte>() { svgColourStroke.A, svgColourStroke.R, svgColourStroke.G, svgColourStroke.B };
+            }
+            else
+            {
+                path_stroke = new List<byte>() { 0, 0, 0, 0 };
+            }
+            if (svgPath.Fill != null && name != "bezie")
+            {
+                var svgColourFill = ((SvgColourServer)svgPath.Fill).Colour;
+                path_fill = new List<byte>() { svgColourFill.A, svgColourFill.R, svgColourFill.G, svgColourFill.B };
+
+            }
+            else
+            {
+                path_fill = new List<byte>() { 0, 0, 0, 0 };
+            }
+
+            if (points.Count != 0)
+            {
+                ListFigureSvg figure = new ListFigureSvg(points,name, path_stroke, path_fill);
                 this.figure_attributes.Add(figure);
             }
  
@@ -273,7 +296,7 @@ namespace IO {
                         var ellipse =  SavePathEllipse(figure_attributesToExport[i]);
                         svgDoc.Children.Add(ellipse);
                         break;
-                    case "path" :
+                    case "bezie" :
                         var path =  SavePathBizie(figure_attributesToExport[i]);
                         svgDoc.Children.Add(path);
                         break;
@@ -339,7 +362,6 @@ namespace IO {
                 new PointF(bezie.points[2].X, bezie.points[2].Y),
                 new PointF(bezie.points[3].X,bezie.points[3].Y))
             );
-            Data.Add(new SvgClosePathSegment(true));
             var bezie_path = new SvgPath()
             {
                 PathData = Data,
