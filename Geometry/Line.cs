@@ -18,7 +18,7 @@ namespace Geometry
         {
             get
             {
-                return new ListFigureSvg(_points, "rectangle", ArgbStroke, ArgbFill, true);
+                return new ListFigureSvg(_points, "line", ArgbStroke, ArgbFill);
             }
         }
 
