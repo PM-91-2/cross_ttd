@@ -450,7 +450,7 @@ public partial class MainWindow : Window
                         selectedIndex = i;
                     }
                 }
-                if (e.Key is Key.Delete)
+                if (e.Key is Key.Delete && selectedIndex != -1)
                 {
                     DeleteFigure(selectedIndex);
                 }
