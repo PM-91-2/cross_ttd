@@ -83,13 +83,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonToolsOnClick(object? sender, RoutedEventArgs e)
     {
-        IO.Svg svgObj = new IO.Svg();
-        List<ListFigureSvg> ForExport = new List<ListFigureSvg>();
-        foreach ( IFigure figure in figureArray) {
-            ForExport.Add(figure.ExportData);
+        List<ListFigureSvg> exportArray = new List<ListFigureSvg>();
+        foreach (IFigure figure in figureArray) {
+            exportArray.Add(figure.ExportData);
         }
-        svgObj.SaveToSVG(ForExport);
-        // throw new NotImplementedException();
+        IO.Svg svgObj = new IO.Svg();
+        svgObj.SaveToSVG(exportArray);
     }
 
     private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
