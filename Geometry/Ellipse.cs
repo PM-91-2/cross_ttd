@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Numerics;
 using System;
+using IO;
 
 
 namespace Geometry
@@ -15,7 +16,15 @@ namespace Geometry
         private List<Vector2> _bounds;
         private float boundEps = 10;
         private float _angle = 0f;
-
+        public List<byte> ArgbFill { get; set; }
+        public List<byte> ArgbStroke { get; set; }
+        public ListFigureSvg ExportData
+        {
+            get
+            {
+                return new ListFigureSvg(_points, "rectangle", ArgbStroke, ArgbFill, true);
+            }
+        }
         public string PathData
         {
 

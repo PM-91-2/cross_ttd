@@ -1,3 +1,5 @@
 <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8,121 L 297,25 314,68 23,164 75,180z" />
+    <path d="M8,121 L 297,25 314,68 23,164z" />
+    <path d="M500,500 L 500,600 600,600 600,500 z" />
+    <rect id="svg_1" height="20" width="191" y="56" x="119" stroke="#000" fill="#fff"/>
 </svg>
