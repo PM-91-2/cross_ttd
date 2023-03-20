@@ -78,7 +78,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonToolsOnClick(object? sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        List<ListFigureSvg> exportArray = new List<ListFigureSvg>();
+        foreach (IFigure figure in figureArray) {
+            exportArray.Add(figure.ExportData);
+        }
+        IO.Svg svgObj = new IO.Svg();
+        svgObj.SaveToSVG(exportArray);
     }
 
     private void ButtonLineOnClick(object? sender, RoutedEventArgs e)

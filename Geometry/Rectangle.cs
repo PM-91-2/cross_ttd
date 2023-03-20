@@ -25,7 +25,11 @@ namespace Geometry
                 _bounds[0].X, _bounds[0].Y, _bounds[1].X, _bounds[1].Y,
                 _bounds[3].X, _bounds[3].Y, _bounds[2].X, _bounds[2].Y);
 
-        public string InputOutputData => PathData;
+        public ListFigureSvg ExportData {
+            get {
+                return new ListFigureSvg(_points, "rectangle", ArgbFill, ArgbStroke, true);
+            }
+        }
 
         public Rectangle(Vector2 point1, Vector2 point2, List<byte> argb_fill, List<byte> argb_stroke) {
             _points = new List<Vector2> {
