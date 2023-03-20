@@ -6,7 +6,7 @@ using Svg.Pathing;
 namespace IO {
     public class Svg
     {
-        private string fileName = "../../../template.svg";
+        private string fileName = "../../../../template.svg";
         private List<ListFigureSvg> figure_attributes = new List<ListFigureSvg>();
         public List<ListFigureSvg> LoadFromSVG()
         {
@@ -250,7 +250,7 @@ namespace IO {
                         break;
                 }
             }
-            svgDoc.Write("Logo_250x150.svg");
+            svgDoc.Write("../../../../template_new.svg");
         }
         
         private SvgEllipse SaveEllipse(ListFigureSvg ellip)
