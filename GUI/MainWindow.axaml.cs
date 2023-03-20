@@ -208,8 +208,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             switch (State)
             {
                 case EnumState.Square:
-                    CreateRectangleFromTool(firstPoint, secondPoint, new List<byte>() { 255, 130, 215, 0 },
-                    new List<byte>() { 255, 90, 90, 90 }, true);
+                    CreateRectangleFromTool(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
+                    new List<byte>() { 255, 90, 255, 0 }, true);
                     State = EnumState.Free;
                     break;
                 case EnumState.Ellipse:
