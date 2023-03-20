@@ -2,7 +2,7 @@
 using System.Numerics;
 using Svg;
 using Svg.Pathing;
-
+ 
 namespace IO {
     public class Svg
     {
@@ -10,11 +10,11 @@ namespace IO {
         private List<ListFigureSvg> figure_attributes = new List<ListFigureSvg>();
         public List<ListFigureSvg> LoadFromSVG()
         {
-            
+ 
             var svg = SvgDocument.Open(fileName);
             foreach (SvgElement svgElem in svg.Children)
             {
-                
+ 
                 switch (svgElem.GetType().Name)
                 {
                     case "SvgPath":
@@ -31,10 +31,10 @@ namespace IO {
                         break;
                 }
             }
-
+ 
             return figure_attributes;
         }
-
+ 
         private void Line(SvgElement svgElem)
         {
             SvgLine? svgLine = svgElem as SvgLine;
@@ -48,7 +48,7 @@ namespace IO {
             {
                 var svgColourStroke = ((SvgColourServer)svgLine.Stroke).Colour;
                 line_stroke = new List<byte>() { svgColourStroke.A, svgColourStroke.R, svgColourStroke.G, svgColourStroke.B };
-
+ 
             }
             else
             {
@@ -58,20 +58,20 @@ namespace IO {
             {
                 var svgColourFill = ((SvgColourServer)svgLine.Fill).Colour;
                 line_fill = new List<byte>() { svgColourFill.A, svgColourFill.R, svgColourFill.G, svgColourFill.B };
-
+ 
             }
             else
             {
                 line_fill = new List<byte>() { 255, 255, 255, 255 };
             }
-
+ 
             List<Vector2> Points = new List<Vector2>();
             Points.Add(new Vector2(x1,y1));
             Points.Add(new Vector2(x2,y2));
             ListFigureSvg figure = new ListFigureSvg(Points,"line", line_stroke, line_fill, true);
             figure_attributes.Add(figure);
         }
-
+ 
         private void Rectangle(SvgElement svgElem)
         {
             SvgRectangle? svgRectangle = svgElem as SvgRectangle;
@@ -85,7 +85,7 @@ namespace IO {
             {
                 var svgColourStroke = ((SvgColourServer)svgRectangle.Stroke).Colour;
                 rect_stroke = new List<byte>() { svgColourStroke.A, svgColourStroke.R, svgColourStroke.G, svgColourStroke.B };
-
+ 
             }
             else
             {
@@ -95,13 +95,13 @@ namespace IO {
             {
                 var svgColourFill = ((SvgColourServer)svgRectangle.Fill).Colour;
                 rect_fill = new List<byte>() { svgColourFill.A, svgColourFill.R, svgColourFill.G, svgColourFill.B };
-
+ 
             }
             else
             {
                 rect_fill = new List<byte>() { 255, 255, 255, 255 };
             }
-
+ 
             List<Vector2> points = new List<Vector2>();
             points.Add(new Vector2(x_rect,y_rect));
             points.Add(new Vector2(x_rect+Width,y_rect));
@@ -110,7 +110,7 @@ namespace IO {
             ListFigureSvg figure = new ListFigureSvg(points,"rectangle", rect_stroke, rect_fill); // To do
             figure_attributes.Add(figure);
         }
-
+ 
         private void Ellipse(SvgElement svgElem)
         {
             SvgEllipse? svgEllipse = svgElem as SvgEllipse;
@@ -124,7 +124,7 @@ namespace IO {
             {
                 var svgColourStroke = ((SvgColourServer)svgEllipse.Stroke).Colour;
                 ellipse_stroke = new List<byte>() { svgColourStroke.A, svgColourStroke.R, svgColourStroke.G, svgColourStroke.B };
-
+ 
             }
             else
             {
@@ -134,14 +134,14 @@ namespace IO {
             {
                 var svgColourFill = ((SvgColourServer)svgEllipse.Fill).Colour;
                 ellipse_fill = new List<byte>() { svgColourFill.A, svgColourFill.R, svgColourFill.G, svgColourFill.B };
-
+ 
             }
             else
             {
                 ellipse_fill = new List<byte>() { 255, 255, 255, 255 };
             }
-            ListFigureSvg figure = new ListFigureSvg(rx,ry,new Vector2(x,y),"ellipse", ellipse_stroke, ellipse_fill);
-            figure_attributes.Add(figure);
+            /*ListFigureSvg figure = new ListFigureSvg(rx,ry,new Vector2(x,y),"ellipse", ellipse_stroke, ellipse_fill);
+            figure_attributes.Add(figure);*/
         }
         //test bezie
         private void Path(SvgElement svgElem)
@@ -149,8 +149,35 @@ namespace IO {
             SvgPath? svgPath = svgElem as SvgPath;
             string name="";
             List<Vector2> points = new List<Vector2>();
+            float angle= 0;
+            float rx = 0;
+            float ry = 0;
+            List<byte> path_stroke;
+            List<byte> path_fill;
+            ListFigureSvg figure = null;
+            if (svgPath.Stroke != null)
+            {
+                var svgColourStroke = ((SvgColourServer)svgPath.Stroke).Colour;
+                path_stroke = new List<byte>() { svgColourStroke.A, svgColourStroke.R, svgColourStroke.G, svgColourStroke.B };
+            }
+            else
+            {
+                path_stroke = new List<byte>() { 255, 0, 0, 0 };
+            }
+            if (svgPath.Fill != null)
+            {
+                var svgColourFill = ((SvgColourServer)svgPath.Fill).Colour;
+                path_fill = new List<byte>() { svgColourFill.A, svgColourFill.R, svgColourFill.G, svgColourFill.B };
+ 
+            }
+            else
+            {
+                path_fill = new List<byte>() { 255, 255, 255, 255 };
+            }
+            //line and bezie
             if (svgPath.PathData.Count == 3)
             {
+                //bezie
                 if ( svgPath.PathData[1] is SvgCubicCurveSegment)
                 {
                     SvgCubicCurveSegment a = (SvgCubicCurveSegment)svgPath.PathData[1];
@@ -161,16 +188,38 @@ namespace IO {
                         points.Add(new Vector2(a.FirstControlPoint.X, a.FirstControlPoint.Y));
                         points.Add(new Vector2(a.SecondControlPoint.X, a.SecondControlPoint.Y));
                         points.Add(new Vector2(a.End.X, a.End.Y));
+                        figure = new ListFigureSvg(points,name, path_stroke, path_fill,1);
                     }
                 }
+                //line
                 if (svgPath.PathData[1] is SvgLineSegment)
                 {
                     SvgLineSegment line = (SvgLineSegment)svgPath.PathData[1];
-
+ 
                         name = "line";
                         points.Add(new Vector2(svgPath.PathData[0].End.X, svgPath.PathData[0].End.Y));
                         points.Add(new Vector2(line.End.X, line.End.Y));
-                    
+                        figure = new ListFigureSvg(points,name, path_stroke, path_fill);
+                }
+            }
+            // ellipse
+            if (svgPath.PathData.Count == 4)
+            {
+                if (svgPath.PathData[1] is SvgArcSegment && svgPath.PathData[2] is SvgArcSegment)
+                {
+                    SvgArcSegment arc1 = (SvgArcSegment) svgPath.PathData[1];
+                    SvgArcSegment arc2 = (SvgArcSegment) svgPath.PathData[2];
+                    if (arc1.RadiusX != null && arc1.RadiusY != null && arc1.Angle != null && arc2.RadiusX != null && arc2.RadiusY != null && arc2.Angle != null)
+                    {
+                        points.Add(new Vector2(svgPath.PathData[0].End.X, svgPath.PathData[0].End.Y));
+                        points.Add(new Vector2(arc1.End.X, arc1.End.Y));
+                        points.Add(new Vector2(arc2.End.X, arc2.End.Y));
+                        name = "ellipse";
+                        angle = arc1.Angle;
+                        rx = arc1.RadiusX;
+                        ry = arc1.RadiusY;
+                    }
+                    figure = new ListFigureSvg(rx,ry,points,name, path_stroke, path_fill,angle);
                 }
             }
             //rectangle
@@ -193,38 +242,18 @@ namespace IO {
                         points.Add(new Vector2(rectangle.End.X, rectangle.End.Y));
                     }
                     name = "rectangle";
+                    figure = new ListFigureSvg(points,name, path_stroke, path_fill,true);
                 }
             }
-            List<byte> path_stroke;
-            List<byte> path_fill;
-            if (svgPath.Stroke != null)
+ 
+            if (figure !=null)
             {
-                var svgColourStroke = ((SvgColourServer)svgPath.Stroke).Colour;
-                path_stroke = new List<byte>() { svgColourStroke.A, svgColourStroke.R, svgColourStroke.G, svgColourStroke.B };
-            }
-            else
-            {
-                path_stroke = new List<byte>() { 255, 0, 0, 0 };
-            }
-            if (svgPath.Fill != null)
-            {
-                var svgColourFill = ((SvgColourServer)svgPath.Fill).Colour;
-                path_fill = new List<byte>() { svgColourFill.A, svgColourFill.R, svgColourFill.G, svgColourFill.B };
-
-            }
-            else
-            {
-                path_fill = new List<byte>() { 255, 255, 255, 255 };
-            }
-
-            if (points.Count != 0)
-            {
-                ListFigureSvg figure = new ListFigureSvg(points,name, path_stroke, path_fill);
+ 
                 this.figure_attributes.Add(figure);
             }
-            
+ 
         }
-
+ 
         public void SaveToSVG(List<ListFigureSvg> figure_attributesToExport)
         {
             var svgDoc = new SvgDocument();
@@ -241,7 +270,7 @@ namespace IO {
                         svgDoc.Children.Add(line);
                         break;
                     case "ellipse" :
-                        var ellipse =  SaveEllipse(figure_attributesToExport[i]);
+                        var ellipse =  SavePathEllipse(figure_attributesToExport[i]);
                         svgDoc.Children.Add(ellipse);
                         break;
                     case "path" :
@@ -252,19 +281,23 @@ namespace IO {
             }
             svgDoc.Write("../../../../template_new.svg");
         }
-        
-        private SvgEllipse SaveEllipse(ListFigureSvg ellip)
+ 
+        private SvgPath SavePathEllipse(ListFigureSvg ellip)
         {
-            var a = new SvgEllipse()
+            SvgPathSegmentList Data = new SvgPathSegmentList();
+            Data.Add(new SvgMoveToSegment(false, new PointF(ellip.points[0].X,ellip.points[0].Y))); 
+            Data.Add(new SvgArcSegment(ellip.x_radius / (ellip.y_radius + ellip.x_radius),ellip.y_radius / (ellip.y_radius + ellip.x_radius),
+                ellip.angle,0, 0,false,new PointF(ellip.points[2].X,ellip.points[2].Y)));
+            Data.Add(new SvgArcSegment(ellip.x_radius / (ellip.y_radius + ellip.x_radius), ellip.y_radius / (ellip.y_radius + ellip.x_radius),
+                ellip.angle, 0, 0,false,new PointF(ellip.points[0].X,ellip.points[0].Y)));
+            Data.Add(new SvgClosePathSegment(true));
+            var ellip_path = new SvgPath()
             {
-                CenterX = ellip.P_ellipse.X,
-                CenterY = ellip.P_ellipse.Y,
-                RadiusX = ellip.r1_ellipse,
-                RadiusY = ellip.r2_ellipse,
-                Fill = new SvgColourServer(Color.FromArgb(ellip.fill[0],ellip.fill[1],ellip.fill[2],ellip.fill[3])) ,
-                Stroke = new SvgColourServer(Color.FromArgb(ellip.stroke[0],ellip.stroke[1],ellip.stroke[2],ellip.stroke[3]))
+                PathData = Data,
+                Fill = new SvgColourServer(Color.FromArgb(ellip.fill[0], ellip.fill[1],ellip.fill[2],ellip.fill[3])) ,
+                Stroke = new SvgColourServer(Color.FromArgb(ellip.stroke[0], ellip.stroke[1],ellip.stroke[2],ellip.stroke[3]))
             };
-            return a;
+            return ellip_path;
         }
         private SvgPath SavePathLine(ListFigureSvg Line)
         {

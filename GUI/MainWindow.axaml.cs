@@ -74,6 +74,15 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 case "rectangle":
                     CreateRectangleFromImport(attr.points[0], attr.points[1], attr.points[2], attr.points[3],
                     attr.fill, attr.stroke, true); break;
+                case "ellipse":
+                    IFigure rectangle = new Ellipse(attr.points, attr.fill, attr.stroke, attr.x_radius,attr.y_radius,attr.angle);
+                    DrawFigure(rectangle, attr.fill, attr.stroke, true);
+                    figureArray.Add(rectangle);
+                    moveFlagArray.Add(false);
+                    scaleFlagArray.Add(false);
+                    rotateFlagArray.Add(false);
+                    selectedFlagArray.Add(false);
+                    break;
             }
         }
     }
