@@ -174,7 +174,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
 
         IO.Svg svgObj = new IO.Svg();
-        List<ListFigureSvg> attrs = svgObj.LoadFromSVG();
+        List<ListFigureSvg> attrs = svgObj.LoadFromSVG(fileLoadName);
         foreach (ListFigureSvg attr in attrs)
         {
             switch (attr.name)
@@ -217,7 +217,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             exportArray.Add(figure.ExportData);
         }
         IO.Svg svgObj = new IO.Svg();
-        svgObj.SaveToSVG(exportArray);
+        svgObj.SaveToSVG(exportArray,fileSaveName);
     }
 
     private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
