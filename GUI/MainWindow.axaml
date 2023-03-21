@@ -12,8 +12,8 @@
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top">
 
-	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonSaveOnClick">Load</Button>
-	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonLoadOnClick">Save</Button>
+	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonSaveOnClick">Save</Button>
+	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonLoadOnClick">Load</Button>
 	        <TextBox Name="uploadTB" Width="115" Height="25" Background="#787878" Foreground="#d9d9d9" BorderBrush="Transparent" Watermark="Filename to upload"></TextBox>
 	        <TextBox Margin="2,0,0,0" Name="saveTB" Width="115" Height="25" Background="#787878" Foreground="#d9d9d9" BorderBrush="Transparent" Watermark="Filename to save"></TextBox>
 
@@ -60,10 +60,5 @@
 	            PointerMoved="OnCanvasPointerMoved"
 	    >
 	    </Canvas>
-	    <TextBlock 
-		    Grid.Row="1" 
-		    Grid.Column="0" 
-		    VerticalAlignment="Bottom" 
-		    Text="0; 0"> </TextBlock>
     </Grid>
 </Window>

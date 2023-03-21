@@ -375,12 +375,12 @@ public partial class MainWindow : Window
             {
                 case EnumState.Square:
                     CreateRectangleFromTool(firstPoint, secondPoint, new List<byte>() {255, 255, 255, 0},
-                        new List<byte>() {255, 90, 255, 0}, true);
+                        new List<byte>() {255, 0, 0, 0}, true);
                     State = EnumState.Free;
                     break;
                 case EnumState.Ellipse:
                     CreateEllipse(firstPoint, secondPoint, new List<byte>() {255, 255, 255, 0},
-                        new List<byte>() {255, 90, 255, 0}, true);
+                        new List<byte>() {255, 0, 0, 0}, true);
                     State = EnumState.Free;
                     break;
                 case EnumState.Curve:
@@ -405,7 +405,7 @@ public partial class MainWindow : Window
 
                     CreateBezierCurveFromTool(BezierPoints[0], BezierPoints[2], BezierPoints[3], BezierPoints[1],
                         new List<byte>() {0, 0, 0, 0},
-                        new List<byte>() {255, 90, 255, 0}, true);
+                        new List<byte>() {255, 0, 0, 0}, true);
 
                     State = EnumState.Free;
 
@@ -419,7 +419,7 @@ public partial class MainWindow : Window
                     break;
                 case EnumState.Line:
                     CreateLine(firstPoint, secondPoint, new List<byte>() {255, 255, 255, 0},
-                        new List<byte>() {255, 90, 255, 0}, true);
+                        new List<byte>() {255, 0, 0, 0}, true);
                     State = EnumState.Free;
                     break;
             }
