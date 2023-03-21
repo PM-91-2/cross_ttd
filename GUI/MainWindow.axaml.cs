@@ -89,7 +89,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         colorButton.Height = 30;
         colorButton.Click += ColorButtonOnClick;
         ClrDockPanel.Children.Add(colorButton);
-        
+
         //timer
         DispatcherTimer timer = new DispatcherTimer();
         timer.Interval = new TimeSpan(0, 0, 1);
@@ -164,7 +164,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonFilesOnClick(object? sender, RoutedEventArgs e)
     {
-        fileLoadName = uploadTB.Text;
+        if (uploadTB.Text != null)
+        {
+            fileLoadName = uploadTB.Text;
+        }
+        else
+        {
+            fileLoadName = "";
+        }
 
         IO.Svg svgObj = new IO.Svg();
         List<ListFigureSvg> attrs = svgObj.LoadFromSVG();
@@ -196,7 +203,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonToolsOnClick(object? sender, RoutedEventArgs e)
     {
-        fileSaveName = saveTB.Text;
+        if (saveTB.Text != null)
+        {
+            fileSaveName = saveTB.Text;
+        }
+        else
+        {
+            fileSaveName = "";
+        }
         
         List<ListFigureSvg> exportArray = new List<ListFigureSvg>();
         foreach (IFigure figure in figureArray) {
