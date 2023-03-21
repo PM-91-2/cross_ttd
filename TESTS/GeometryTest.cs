@@ -55,41 +55,6 @@ namespace LinearAlgebra.Test
         }
     }
     
-    /*public class ListFigureSvgtest
-    {
-
-        [SetUp]
-        public void setup()
-        {
-
-        }
-
-        //линия
-        [Test]
-        
-        public void line00_11returned()
-        {
-            //arrange
-            
-            Vector2 = new List<Vector2> [0, 0];
-            Vector2 Y = new Vector2(1, 1);
-            var points = new List<Vector2>() { X, Y };
-            
-            var expected = "line";
-            var actual = IFigure.(points).ToString();
-            
-            Assert.AreEqual(expected, actual);
-
-            //assert
-            Assert.That(actual.v00, Is.EqualTo(8));
-            Assert.That(actual.v01, Is.EqualTo(12));
-            Assert.That(actual.v10, Is.EqualTo(4));
-            Assert.That(actual.v11, Is.EqualTo(8));
-
-
-        }
-    }*/
-    
 }
 
 
