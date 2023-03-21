@@ -74,7 +74,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     Label labelColor = new Label();
     Panel panel = new Panel();
     Label spaceLabel = new Label();
-    Button closeClrPickButton = new Button(); 
+    Button closeClrPickButton = new Button();
+
+    public string fileLoadName = "";
+    public string fileSaveName = "";
     
     public MainWindow()
     {
@@ -161,6 +164,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonFilesOnClick(object? sender, RoutedEventArgs e)
     {
+        fileLoadName = uploadTB.Text;
+
         IO.Svg svgObj = new IO.Svg();
         List<ListFigureSvg> attrs = svgObj.LoadFromSVG();
         foreach (ListFigureSvg attr in attrs)
@@ -191,6 +196,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonToolsOnClick(object? sender, RoutedEventArgs e)
     {
+        fileSaveName = saveTB.Text;
+        
         List<ListFigureSvg> exportArray = new List<ListFigureSvg>();
         foreach (IFigure figure in figureArray) {
             exportArray.Add(figure.ExportData);
