@@ -10,7 +10,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Geometry;
 using IO;
 using Rectangle = Geometry.Rectangle;
@@ -57,15 +59,114 @@ public partial class MainWindow : Window
 
     private Tuple<IFigure, List<byte>, List<byte>, bool>? bufferFigure = null;
 
+    Button colorButton = new Button();
+    
+    Slider sliderA = new Slider();
+    Slider sliderR = new Slider();
+    Slider sliderG = new Slider();
+    Slider sliderB = new Slider();
+    Label labelA = new Label();
+    Label labelR = new Label();
+    Label labelG = new Label();
+    Label labelB = new Label();
+    Label labelAValue = new Label();
+    Label labelRValue = new Label();
+    Label labelGValue = new Label();
+    Label labelBValue = new Label();
+    Label labelColor = new Label();
+    Panel panel = new Panel();
+    Label spaceLabel = new Label();
+    Button closeClrPickButton = new Button();
+
+    public string fileLoadName = "";
+    public string fileSaveName = "";
+    
     public MainWindow()
     {
         InitializeComponent();
+        colorButton.Content = "Color";
+        colorButton.Background = new SolidColorBrush(Colors.Transparent);
+        colorButton.Foreground = new SolidColorBrush(Color.FromArgb(255, 217, 217, 217));
+        colorButton.BorderBrush =new SolidColorBrush(Colors.Transparent);
+        colorButton.Height = 30;
+        colorButton.Click += ColorButtonOnClick;
+        ClrDockPanel.Children.Add(colorButton);
+
+        //timer
+        DispatcherTimer timer = new DispatcherTimer();
+        timer.Interval = new TimeSpan(0, 0, 1);
+        timer.Tick += TimerOnTick;
+        timer.Start();
+    }
+
+    private void ColorButtonOnClick(object? sender, RoutedEventArgs e)
+    {
+        panel.Height = 20;                                                                                                             
+        panel.Width = 20;                                                                                                              
+        panel.Background = new SolidColorBrush(Color.FromArgb((byte)sliderA.Value, (byte)sliderR.Value, (byte)sliderG.Value, (byte)sliderB.Value));    
+                                                                                                                           
+        sliderA.Width = sliderR.Width = sliderG.Width = sliderB.Width = 100;                                                                           
+        sliderA.Minimum = sliderR.Minimum = sliderG.Minimum = sliderB.Minimum = 0;                                                                       
+        sliderA.Maximum = sliderR.Maximum = sliderG.Maximum = sliderB.Maximum = 255;
+
+        labelA.Content = "ALPHA:"; 
+        labelR.Content = "RED:";                                                                                                       
+        labelG.Content = "GREEN:";                                                                                                     
+        labelB.Content = "BLUE:"; 
+        labelColor.Content = "Color:";
+        spaceLabel.Width = 35;
+        labelA.Width = labelR.Width = labelG.Width = labelB.Width = labelColor.Width = 50;                                                            
+         
+        labelAValue.Content = (int)sliderA.Value; 
+        labelRValue.Content = (int)sliderR.Value;                                                                                      
+        labelGValue.Content = (int)sliderG.Value;                                                                                      
+        labelBValue.Content = (int)sliderB.Value;                                                                                      
+                                                                                                                               
+        closeClrPickButton.Content = "Close";                                                                                          
+        closeClrPickButton.Click += CloseClrPickButtonOnClick;   
+        
+        WP_clrPick.Children.Add(labelA);                                                                                               
+        WP_clrPick.Children.Add(sliderA);                                                                                              
+        WP_clrPick.Children.Add(labelAValue);                                                                                                                       
+        WP_clrPick.Children.Add(labelR);                                                                                               
+        WP_clrPick.Children.Add(sliderR);                                                                                              
+        WP_clrPick.Children.Add(labelRValue);                                                                                          
+        WP_clrPick.Children.Add(labelG);                                                                                               
+        WP_clrPick.Children.Add(sliderG);                                                                                              
+        WP_clrPick.Children.Add(labelGValue);                                                                                          
+        WP_clrPick.Children.Add(labelB);                                                                                               
+        WP_clrPick.Children.Add(sliderB);                                                                                              
+        WP_clrPick.Children.Add(labelBValue);                                                                                          
+        WP_clrPick.Children.Add(labelColor);                                                                                           
+        WP_clrPick.Children.Add(panel);                                                                                                
+        WP_clrPick.Children.Add(spaceLabel);                                                                                                
+        WP_clrPick.Children.Add(closeClrPickButton);
+
+        colorButton.IsEnabled = false;
+    }
+
+    private void TimerOnTick(object? sender, EventArgs e)
+    {
+        panel.Background = new SolidColorBrush(Color.FromArgb((byte)sliderA.Value, (byte)sliderR.Value, (byte)sliderG.Value, (byte)sliderB.Value));
+        labelAValue.Content = ((int)sliderA.Value).ToString();
+        labelRValue.Content = ((int)sliderR.Value).ToString();                                                                            
+        labelGValue.Content = ((int)sliderG.Value).ToString();                                                                            
+        labelBValue.Content = ((int)sliderB.Value).ToString();
     }
 
     private void ButtonLoadOnClick(object? sender, RoutedEventArgs e)
     {
+        if (uploadTB.Text != null)
+        {
+            fileLoadName = uploadTB.Text;
+        }
+        else
+        {
+            fileLoadName = "";
+        }
+
         IO.Svg svgObj = new IO.Svg();
-        List<ListFigureSvg> attrs = svgObj.LoadFromSVG();
+        List<ListFigureSvg> attrs = svgObj.LoadFromSVG(fileLoadName);
         foreach (ListFigureSvg attr in attrs)
         {
             switch (attr.name)
@@ -97,6 +198,15 @@ public partial class MainWindow : Window
 
     private void ButtonSaveOnClick(object? sender, RoutedEventArgs e)
     {
+        if (saveTB.Text != null)
+        {
+            fileSaveName = saveTB.Text;
+        }
+        else
+        {
+            fileSaveName = "";
+        }
+        
         List<ListFigureSvg> exportArray = new List<ListFigureSvg>();
         foreach (IFigure figure in figureArray)
         {
@@ -104,7 +214,7 @@ public partial class MainWindow : Window
         }
 
         IO.Svg svgObj = new IO.Svg();
-        svgObj.SaveToSVG(exportArray);
+        svgObj.SaveToSVG(exportArray,fileSaveName);
     }
 
     private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
@@ -142,6 +252,12 @@ public partial class MainWindow : Window
 
     private void DrawAll()
     {
+        int index = figureArray.Count - 1;
+        if (index >= 0)
+        {
+            figureArray[index].ArgbFill =                                                                     
+                new List<byte>() { (byte)sliderA.Value, (byte)sliderR.Value, (byte)sliderG.Value, (byte)sliderB.Value }; 
+        }
         for (int i = 0; i < figureArray.Count; i++)
         {
             List<Path> pathFigure = DrawFigure(figureArray[i], figureArray[i].ArgbFill, figureArray[i].ArgbStroke,
@@ -151,6 +267,12 @@ public partial class MainWindow : Window
             grid.Children.Add(pathFigure[1]);
             ThisCanv.Children.Add(grid);
         }
+    }
+
+    private void CloseClrPickButtonOnClick(object? sender, RoutedEventArgs e)
+    {
+        WP_clrPick.Children.Clear();
+        colorButton.IsEnabled = true;
     }
 
     private void ButtonLineOnClick(object? sender, RoutedEventArgs e)
