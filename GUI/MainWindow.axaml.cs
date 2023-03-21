@@ -74,7 +74,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     Label labelColor = new Label();
     Panel panel = new Panel();
     Label spaceLabel = new Label();
-    Button closeClrPickButton = new Button(); 
+    Button closeClrPickButton = new Button();
+
+    public string fileLoadName = "";
+    public string fileSaveName = "";
     
     public MainWindow()
     {
@@ -86,7 +89,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         colorButton.Height = 30;
         colorButton.Click += ColorButtonOnClick;
         ClrDockPanel.Children.Add(colorButton);
-        
+
         //timer
         DispatcherTimer timer = new DispatcherTimer();
         timer.Interval = new TimeSpan(0, 0, 1);
@@ -161,8 +164,17 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonFilesOnClick(object? sender, RoutedEventArgs e)
     {
+        if (uploadTB.Text != null)
+        {
+            fileLoadName = uploadTB.Text;
+        }
+        else
+        {
+            fileLoadName = "";
+        }
+
         IO.Svg svgObj = new IO.Svg();
-        List<ListFigureSvg> attrs = svgObj.LoadFromSVG();
+        List<ListFigureSvg> attrs = svgObj.LoadFromSVG(fileLoadName);
         foreach (ListFigureSvg attr in attrs)
         {
             switch (attr.name)
@@ -191,12 +203,21 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ButtonToolsOnClick(object? sender, RoutedEventArgs e)
     {
+        if (saveTB.Text != null)
+        {
+            fileSaveName = saveTB.Text;
+        }
+        else
+        {
+            fileSaveName = "";
+        }
+        
         List<ListFigureSvg> exportArray = new List<ListFigureSvg>();
         foreach (IFigure figure in figureArray) {
             exportArray.Add(figure.ExportData);
         }
         IO.Svg svgObj = new IO.Svg();
-        svgObj.SaveToSVG(exportArray);
+        svgObj.SaveToSVG(exportArray,fileSaveName);
     }
 
     private List<Path> DrawFigure(IFigure figure, List<byte> argb_fill, List<byte> arbg_stroke, Boolean needBoundingBox)
@@ -354,12 +375,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             {
                 case EnumState.Square:
                     CreateRectangleFromTool(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 255 },
-                    new List<byte>() { 255, 90, 255, 0 }, true);
+                    new List<byte>() { 255, 0, 0, 0 }, true);
                     State = EnumState.Free;
                     break;
                 case EnumState.Ellipse:
                     CreateEllipse(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
-                        new List<byte>() { 255, 90, 255, 0 }, true);
+                        new List<byte>() { 255, 0, 0, 0 }, true);
                          State = EnumState.Free;
                     break;
                 case EnumState.Curve:
@@ -378,7 +399,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     }
 
                     CreateBezierCurveFromTool(BezierPoints[0], BezierPoints[2], BezierPoints[3], BezierPoints[1], new List<byte>() { 0, 0, 0, 0 },
-                        new List<byte>() { 255, 90, 255, 0 }, true);
+                        new List<byte>() { 255, 0, 0, 0 }, true);
 
                     State = EnumState.Free;
 
@@ -391,7 +412,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     break;
                 case EnumState.Line:
                     CreateLine(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
-                        new List<byte>() { 255, 90, 255, 0 }, true);
+                        new List<byte>() { 255, 0, 0, 0 }, true);
                     State = EnumState.Free;
                     break;
             }
@@ -540,7 +561,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         ThisCanv.Children.RemoveAt(index);
         var pathFigure = DrawFigure(figureArray[index], new List<byte>() { 255, 255, 255, 0 },
-            new List<byte>() { 255, 90, 255, 0 }, selectedFlagArray[index]);
+            new List<byte>() { 255, 0, 0, 0 }, selectedFlagArray[index]);
         Grid grid = new Grid();
         grid.Children.Add(pathFigure[0]);
         grid.Children.Add(pathFigure[1]);

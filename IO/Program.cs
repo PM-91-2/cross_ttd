@@ -6,12 +6,15 @@ using Svg.Pathing;
 namespace IO {
     public class Svg
     {
-        private string fileName = "../../../../template.svg";
+        private string filePath = "../../../../";
         private List<ListFigureSvg> figure_attributes = new List<ListFigureSvg>();
-        public List<ListFigureSvg> LoadFromSVG()
+        public List<ListFigureSvg> LoadFromSVG(string fileLoadName)
         {
- 
-            var svg = SvgDocument.Open(fileName);
+            if (fileLoadName == "")
+            {
+                fileLoadName = "template";
+            }
+            var svg = SvgDocument.Open(filePath + fileLoadName +".svg");
             foreach (SvgElement svgElem in svg.Children)
             {
  
@@ -275,8 +278,12 @@ namespace IO {
  
         }
  
-        public void SaveToSVG(List<ListFigureSvg> figure_attributesToExport)
+        public void SaveToSVG(List<ListFigureSvg> figure_attributesToExport,string fileSaveName)
         {
+            if (fileSaveName =="")
+            {
+                fileSaveName = "template_new";
+            }
             var svgDoc = new SvgDocument();
             for (int i = 0; i < figure_attributesToExport.Count; i++)
             {
@@ -300,7 +307,7 @@ namespace IO {
                         break;
                 }
             }
-            svgDoc.Write("../../../../template_new.svg");
+            svgDoc.Write(filePath + fileSaveName + ".svg");
         }
  
         private SvgPath SavePathEllipse(ListFigureSvg ellip)

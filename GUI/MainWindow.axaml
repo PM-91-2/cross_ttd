@@ -12,6 +12,8 @@
                    VerticalAlignment="Top">
 	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonFilesOnClick">Load</Button>
 	        <Button Background="Transparent" Foreground="#d9d9d9" BorderBrush="Transparent" Height="30" Click="ButtonToolsOnClick">Save</Button>
+	        <TextBox Name="uploadTB" Width="115" Height="25" Background="#787878" Foreground="#d9d9d9" BorderBrush="Transparent" Watermark="Filename to upload"></TextBox>
+	        <TextBox Margin="2,0,0,0" Name="saveTB" Width="115" Height="25" Background="#787878" Foreground="#d9d9d9" BorderBrush="Transparent" Watermark="Filename to save"></TextBox>
         </DockPanel>
 	    <DockPanel Name="ClrDockPanel" Grid.Row="0" Grid.Column="2" ZIndex="1" HorizontalAlignment="Right" VerticalAlignment="Top"> </DockPanel>
 	    <Rectangle Grid.Row="0" Grid.Column="0" Fill="#454545" ZIndex="0"></Rectangle>
