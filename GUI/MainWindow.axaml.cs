@@ -354,12 +354,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             {
                 case EnumState.Square:
                     CreateRectangleFromTool(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 255 },
-                    new List<byte>() { 255, 90, 255, 0 }, true);
+                    new List<byte>() { 255, 0, 0, 0 }, true);
                     State = EnumState.Free;
                     break;
                 case EnumState.Ellipse:
                     CreateEllipse(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
-                        new List<byte>() { 255, 90, 255, 0 }, true);
+                        new List<byte>() { 255, 0, 0, 0 }, true);
                          State = EnumState.Free;
                     break;
                 case EnumState.Curve:
@@ -378,7 +378,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     }
 
                     CreateBezierCurveFromTool(BezierPoints[0], BezierPoints[2], BezierPoints[3], BezierPoints[1], new List<byte>() { 0, 0, 0, 0 },
-                        new List<byte>() { 255, 90, 255, 0 }, true);
+                        new List<byte>() { 255, 0, 0, 0 }, true);
 
                     State = EnumState.Free;
 
@@ -391,7 +391,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     break;
                 case EnumState.Line:
                     CreateLine(firstPoint, secondPoint, new List<byte>() { 255, 255, 255, 0 },
-                        new List<byte>() { 255, 90, 255, 0 }, true);
+                        new List<byte>() { 255, 0, 0, 0 }, true);
                     State = EnumState.Free;
                     break;
             }
@@ -540,7 +540,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         ThisCanv.Children.RemoveAt(index);
         var pathFigure = DrawFigure(figureArray[index], new List<byte>() { 255, 255, 255, 0 },
-            new List<byte>() { 255, 90, 255, 0 }, selectedFlagArray[index]);
+            new List<byte>() { 255, 0, 0, 0 }, selectedFlagArray[index]);
         Grid grid = new Grid();
         grid.Children.Add(pathFigure[0]);
         grid.Children.Add(pathFigure[1]);
