@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IO", "IO\IO.csproj", "{7D82
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "Geometry\Geometry.csproj", "{D19B89D5-28B3-4E8F-94C7-B05708A170A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TESTS", "TESTS\TESTS.csproj", "{AFF3738E-B7CC-4CB4-9A5C-80C3F1A37498}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,5 +35,9 @@ Global
 		{D19B89D5-28B3-4E8F-94C7-B05708A170A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D19B89D5-28B3-4E8F-94C7-B05708A170A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D19B89D5-28B3-4E8F-94C7-B05708A170A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFF3738E-B7CC-4CB4-9A5C-80C3F1A37498}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFF3738E-B7CC-4CB4-9A5C-80C3F1A37498}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFF3738E-B7CC-4CB4-9A5C-80C3F1A37498}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFF3738E-B7CC-4CB4-9A5C-80C3F1A37498}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
